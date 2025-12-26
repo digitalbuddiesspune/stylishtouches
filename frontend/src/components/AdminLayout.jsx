@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { Package, ShoppingCart, LayoutDashboard } from "lucide-react";
 import { useUser } from "../context/UserContext";
+import ScrollToTop from "./ScrollToTop";
 
 const AdminLayout = () => {
   const location = useLocation();
@@ -21,6 +22,7 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <ScrollToTop />
       {/* Sidebar */}
       <div className="w-64 shadow-2xl" style={{ backgroundColor: 'var(--text-black)' }}>
         <div className="p-6">

@@ -10,6 +10,7 @@ import Bag from '../models/Bag.js';
 import MensShoe from '../models/MensShoe.js';
 import WomensShoe from '../models/WomensShoe.js';
 import { verifyToken, requireAdmin } from '../middleware/authMiddleware.js';
+import { createPayment, paymentSuccess, paymentFailure } from '../controllers/paymentController.js';
 
 // -------- Resolve Item - Handle all product types --------
 async function resolveItem(productId) {
@@ -39,6 +40,17 @@ async function resolveItem(productId) {
 }
 
 const paymentRouter = express.Router();
+
+// -------- PAYMENT GATEWAY ROUTES --------
+// Create payment request (for online payment)
+paymentRouter.post('/create', verifyToken, createPayment);
+
+// Payment callbacks (no auth required - called by payment gateway)
+// Handle both GET and POST as some gateways may use GET redirects
+paymentRouter.post('/success', paymentSuccess);
+paymentRouter.get('/success', paymentSuccess);
+paymentRouter.post('/failure', paymentFailure);
+paymentRouter.get('/failure', paymentFailure);
 
 // -------- CREATE ORDER (Cash on Delivery) --------
 paymentRouter.post('/create-order', verifyToken, async (req, res) => {

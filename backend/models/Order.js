@@ -43,12 +43,20 @@ const orderSchema = new mongoose.Schema(
       phone: String,
     },
     paymentDetails: {
+      // Razorpay fields (legacy)
       razorpayOrderId: String,
       razorpayPaymentId: String,
       razorpaySignature: String,
+      // Payment Gateway fields
       paymentMethod: String,
-      upi: String,
+      status: String, // paid, failed, pending
+      transactionId: String,
+      gatewayTransactionId: String,
+      gatewayResponse: mongoose.Schema.Types.Mixed, // Raw gateway callback response
+      statusResponse: mongoose.Schema.Types.Mixed, // Payment status API response
+      errorMessage: String,
       verifiedAt: Date,
+      upi: String,
     },
   },
   { timestamps: true }

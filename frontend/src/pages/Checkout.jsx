@@ -4,13 +4,21 @@ import { CartContext } from '../context/CartContext';
 import { useUser } from '../context/UserContext';
 import api from '../api/axios';
 
-// Payment method - Cash on Delivery only
-const PAYMENT_METHOD = {
-  id: 'cod',
-  name: 'Cash on Delivery',
-  icon: '💵',
-  description: 'Pay with cash when your order is delivered'
-};
+// Payment methods
+const PAYMENT_METHODS = [
+  {
+    id: 'online',
+    name: 'Online Payment',
+    icon: '💳',
+    description: 'Pay securely with credit/debit card, UPI, or net banking'
+  },
+  {
+    id: 'cod',
+    name: 'Cash on Delivery',
+    icon: '💵',
+    description: 'Pay with cash when your order is delivered'
+  }
+];
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -18,6 +26,7 @@ const CheckoutPage = () => {
   const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('online');
 
   const [address, setAddress] = useState({
     name: '',
@@ -27,6 +36,18 @@ const CheckoutPage = () => {
     zipCode: '',
     phone: ''
   });
+
+  // Pre-fill user data if available
+  useEffect(() => {
+    if (user) {
+      setAddress(prev => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: user.email || '',
+        phone: prev.phone || user.phone || ''
+      }));
+    }
+  }, [user]);
 
   const subtotal = cart.reduce((sum, item) => {
     const price = item.price || item.finalPrice || 0;
@@ -57,23 +78,48 @@ const CheckoutPage = () => {
       return;
     }
 
+    // Validate email for online payment
+    if (selectedPaymentMethod === 'online' && !user?.email) {
+      setError('Email is required for online payment');
+      setLoading(false);
+      return;
+    }
+
     try {
-      // Create order with Cash on Delivery
-      const response = await api.post('/payment/create-order', {
-        amount: total,
-        shippingAddress: address,
-        paymentMethod: 'cod'
-      });
+      if (selectedPaymentMethod === 'online') {
+        // Online Payment - Create payment request
+        const response = await api.post('/payment/create', {
+          amount: total,
+          name: address.name,
+          email: user?.email || address.email || '',
+          phone: address.phone,
+          shippingAddress: address
+        });
 
-      const data = response.data;
-      if (response.status !== 200) throw new Error(data.message || 'Order creation failed');
+        const data = response.data;
+        if (!data.success || !data.redirectUrl) {
+          throw new Error(data.message || 'Failed to create payment request');
+        }
 
-      // Clear cart and navigate to orders
-      clearCart();
-      navigate('/orders');
+        // Redirect to payment gateway
+        window.location.href = data.redirectUrl;
+      } else {
+        // Cash on Delivery
+        const response = await api.post('/payment/create-order', {
+          amount: total,
+          shippingAddress: address,
+          paymentMethod: 'cod'
+        });
+
+        const data = response.data;
+        if (response.status !== 200) throw new Error(data.message || 'Order creation failed');
+
+        // Clear cart and navigate to orders
+        clearCart();
+        navigate('/orders');
+      }
     } catch (err) {
-      setError(err.message);
-    } finally {
+      setError(err.response?.data?.message || err.message || 'Something went wrong');
       setLoading(false);
     }
   };
@@ -118,21 +164,50 @@ const CheckoutPage = () => {
             <p className="text-sm sm:text-base" style={{ color: 'var(--text-secondary)' }}>Please provide your delivery details</p>
           </div>
 
-          {/* Payment Method Info */}
-          <div className="mb-6 p-4 rounded-xl border-2" style={{ 
-            backgroundColor: 'var(--bg-secondary)',
-            borderColor: 'var(--accent-yellow)'
-          }}>
-            <div className="flex items-center space-x-3">
-              <span className="text-2xl sm:text-3xl">{PAYMENT_METHOD.icon}</span>
-              <div>
-                <h3 className="font-bold text-base sm:text-lg" style={{ color: 'var(--text-primary)' }}>
-                  {PAYMENT_METHOD.name}
-                </h3>
-                <p className="text-xs sm:text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-                  {PAYMENT_METHOD.description}
-                </p>
-              </div>
+          {/* Payment Method Selection */}
+          <div className="mb-6">
+            <h3 className="text-lg sm:text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+              Select Payment Method
+            </h3>
+            <div className="space-y-3">
+              {PAYMENT_METHODS.map((method) => (
+                <label
+                  key={method.id}
+                  className={`block p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                    selectedPaymentMethod === method.id
+                      ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-yellow-400'
+                  }`}
+                  style={{
+                    backgroundColor: selectedPaymentMethod === method.id 
+                      ? 'rgba(251, 191, 36, 0.1)' 
+                      : 'var(--bg-secondary)',
+                    borderColor: selectedPaymentMethod === method.id 
+                      ? 'var(--accent-yellow)' 
+                      : 'var(--border-color)'
+                  }}
+                >
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value={method.id}
+                      checked={selectedPaymentMethod === method.id}
+                      onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                      className="w-4 h-4 text-yellow-600 focus:ring-yellow-500"
+                    />
+                    <span className="text-2xl sm:text-3xl">{method.icon}</span>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-base sm:text-lg" style={{ color: 'var(--text-primary)' }}>
+                        {method.name}
+                      </h4>
+                      <p className="text-xs sm:text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+                        {method.description}
+                      </p>
+                    </div>
+                  </div>
+                </label>
+              ))}
             </div>
           </div>
 
@@ -326,10 +401,14 @@ const CheckoutPage = () => {
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white"></div>
-                  <span className="text-sm sm:text-base">Placing Order...</span>
+                  <span className="text-sm sm:text-base">
+                    {selectedPaymentMethod === 'online' ? 'Redirecting to Payment...' : 'Placing Order...'}
+                  </span>
                 </span>
               ) : (
-                `Place Order (₹${total.toLocaleString()})`
+                selectedPaymentMethod === 'online' 
+                  ? `Pay Now (₹${total.toLocaleString()})`
+                  : `Place Order (₹${total.toLocaleString()})`
               )}
             </button>
           </form>
@@ -396,18 +475,32 @@ const CheckoutPage = () => {
             </div>
           </div>
 
-          {/* Cash on Delivery Notice */}
-          <div className="p-3 sm:p-4 rounded-lg text-xs sm:text-sm border-2" style={{ 
-            backgroundColor: 'var(--bg-secondary)',
-            borderColor: 'var(--accent-yellow)',
-            color: 'var(--text-secondary)'
-          }}>
-            <div className="flex items-center gap-2 mb-1 sm:mb-2">
-              <span className="text-lg">💵</span>
-              <span className="font-medium" style={{ color: 'var(--text-primary)' }}>Cash on Delivery</span>
+          {/* Payment Info Notice */}
+          {selectedPaymentMethod === 'online' ? (
+            <div className="p-3 sm:p-4 rounded-lg text-xs sm:text-sm border-2" style={{ 
+              backgroundColor: 'var(--bg-secondary)',
+              borderColor: 'var(--accent-yellow)',
+              color: 'var(--text-secondary)'
+            }}>
+              <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                <span className="text-lg">🔒</span>
+                <span className="font-medium" style={{ color: 'var(--text-primary)' }}>Secure Payment</span>
+              </div>
+              <p className="leading-relaxed">Your payment is processed securely. You will be redirected to the payment gateway to complete the transaction.</p>
             </div>
-            <p className="leading-relaxed">Pay with cash when your order is delivered. No online payment required.</p>
-          </div>
+          ) : (
+            <div className="p-3 sm:p-4 rounded-lg text-xs sm:text-sm border-2" style={{ 
+              backgroundColor: 'var(--bg-secondary)',
+              borderColor: 'var(--accent-yellow)',
+              color: 'var(--text-secondary)'
+            }}>
+              <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                <span className="text-lg">💵</span>
+                <span className="font-medium" style={{ color: 'var(--text-primary)' }}>Cash on Delivery</span>
+              </div>
+              <p className="leading-relaxed">Pay with cash when your order is delivered. No online payment required.</p>
+            </div>
+          )}
         </div>
         </div>
       </div>

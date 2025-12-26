@@ -16,6 +16,8 @@ import Signin from "../pages/Signin.jsx";
 import UserInfo from "../pages/UserInfo.jsx";
 import MyOrders from "../pages/MyOrders.jsx";
 import Checkout from "../pages/Checkout.jsx";
+import PaymentSuccess from "../pages/PaymentSuccess.jsx";
+import PaymentFailure from "../pages/PaymentFailure.jsx";
 import ProtectedRoute from "../components/ProtectedRoute.jsx"; 
 import CategoryPage from "../pages/CategoryPage.jsx";
 import AdminLayout from "../components/AdminLayout.jsx";
@@ -64,6 +66,9 @@ const router = () =>
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/shipping-policy" element={<ShippingPolicy />} />
           <Route path="/return-policy" element={<ReturnPolicy />} />
+          {/* Payment callback pages (public, no auth required) */}
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-failure" element={<PaymentFailure />} />
         </Route>
 
         {/* Auth pages (public) */}

@@ -25,6 +25,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // For payment gateway callbacks
 
 // Fix __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);

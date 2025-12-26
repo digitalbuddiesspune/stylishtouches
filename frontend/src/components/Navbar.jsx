@@ -78,7 +78,7 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
               <img 
                 src="https://res.cloudinary.com/dvkxgrcbv/image/upload/v1766062481/01ecd43a-da05-4a95-a5b3-36af250d2740.png" 
                 alt="Stylish Touches" 
-                className="h-12 sm:h-14 md:h-16 lg:h-20 w-auto object-contain"
+                className="h-12 sm:h-14 md:h-16 lg:h-16 w-auto object-contain"
                 style={{ maxWidth: '280px' }}
               />
             </Link>
