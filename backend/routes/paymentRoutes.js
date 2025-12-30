@@ -5,7 +5,6 @@ import Cart from '../models/Cart.js';
 import Product from '../models/Product.js';
 import ContactLens from '../models/ContactLens.js';
 import Accessory from '../models/Accessory.js';
-import SkincareProduct from '../models/SkincareProduct.js';
 import Bag from '../models/Bag.js';
 import MensShoe from '../models/MensShoe.js';
 import WomensShoe from '../models/WomensShoe.js';
@@ -23,9 +22,6 @@ async function resolveItem(productId) {
   
   doc = await Accessory.findById(productId).lean();
   if (doc) return { ...doc, _type: 'accessory', price: doc.finalPrice || doc.price || 0 };
-  
-  doc = await SkincareProduct.findById(productId).lean();
-  if (doc) return { ...doc, _type: 'skincare', price: doc.finalPrice || doc.price || 0 };
   
   doc = await Bag.findById(productId).lean();
   if (doc) return { ...doc, _type: 'bag', price: doc.finalPrice || doc.price || 0 };

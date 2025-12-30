@@ -45,7 +45,6 @@ export default function CategoryPage({ addToCart, addToWishlist }) {
   const categoryLower = (category || "").toLowerCase();
   const isContactLenses = useMemo(() => /contact\s+lenses/i.test(category || ""), [category]);
   const isAccessories = useMemo(() => /^accessories$/i.test(category || ""), [category]);
-  const isSkincare = useMemo(() => /^skincare$/i.test(category || ""), [category]);
   const isBags = useMemo(() => /^bags$/i.test(category || ""), [category]);
   const isMensShoes = useMemo(() => /men'?s\s+shoes/i.test(category || ""), [category]);
   const isWomensShoes = useMemo(() => /women'?s\s+shoes/i.test(category || ""), [category]);
@@ -225,8 +224,7 @@ export default function CategoryPage({ addToCart, addToWishlist }) {
     const colorsList = Object.keys(colorCounts).length ? Object.keys(colorCounts) : COLORS_FALLBACK;
     
     // Accessories subcategories
-    const accessoriesSubcategories = ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs"];
-    const skincareSubcategories = ["Moisturizer", "Serum", "Cleanser", "Facewash", "Sunscreen"];
+    const accessoriesSubcategories = ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs", "Watches"];
     const bagsSubcategories = ["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"];
     const mensShoesSubcategories = ["Formal", "Sneakers", "Boots"];
     const womensShoesSubcategories = ["Heels", "Flats", "Sneakers", "Boots", "Sandals"];
@@ -463,48 +461,6 @@ export default function CategoryPage({ addToCart, addToWishlist }) {
               </div>
             </Section>
           </>
-        )}
-
-        {/* Skincare SubCategory Filter */}
-        {isSkincare && (
-          <Section title="Product Type" id="subCategory">
-            <div className="flex flex-col gap-2.5">
-              {skincareSubcategories.map((subCat) => {
-                const count = subCategoryCounts[subCat.toUpperCase()] || 0;
-                const disabled = count === 0;
-                const isActive = activeSubCategory.toLowerCase() === subCat.toLowerCase();
-                return (
-                  <button
-                    key={subCat}
-                    onClick={() => !disabled && setParam("subCategory", isActive ? null : subCat.toLowerCase())}
-                    className={`text-left px-4 py-2.5 rounded-lg border-2 flex items-center justify-between transition-all duration-200 ${
-                      isActive 
-                        ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-indigo-600 shadow-md transform scale-[1.02]" 
-                        : disabled 
-                          ? "text-gray-400 border-gray-200 cursor-not-allowed bg-gray-50" 
-                          : "hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:border-indigo-300 hover:shadow-sm border-gray-200"
-                    }`}
-                    disabled={disabled}
-                  >
-                    <span className="font-medium">{subCat}</span>
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                      isActive ? "bg-white/20 text-white" : "bg-gray-100 text-gray-600"
-                    }`}>
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-              {activeSubCategory && (
-                <button 
-                  onClick={() => setParam("subCategory", null)} 
-                  className="text-sm text-indigo-600 hover:text-indigo-700 hover:underline self-start font-medium mt-1"
-                >
-                  Clear type
-                </button>
-              )}
-            </div>
-          </Section>
         )}
 
         {/* Men's Shoes SubCategory Filter */}

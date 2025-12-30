@@ -14,7 +14,6 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [accessoriesOpen, setAccessoriesOpen] = useState(false);
   const [bagsOpen, setBagsOpen] = useState(false);
-  const [skincareOpen, setSkincareOpen] = useState(false);
   const [mensShoesOpen, setMensShoesOpen] = useState(false);
   const [womensShoesOpen, setWomensShoesOpen] = useState(false);
   const navRef = useRef(null);
@@ -40,7 +39,6 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
         setMenuOpen(false);
         setCategoriesOpen(false);
         setAccessoriesOpen(false);
-        setSkincareOpen(false);
         setMensShoesOpen(false);
         setWomensShoesOpen(false);
       }
@@ -368,7 +366,6 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                     onClick={() => {
                       setAccessoriesOpen(!accessoriesOpen);
                       setCategoriesOpen(false);
-                      setSkincareOpen(false);
                       setMensShoesOpen(false);
                     }}
                     className="w-full text-left text-optic-body text-sm font-medium uppercase tracking-wider py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-between"
@@ -386,7 +383,6 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                           onClick={() => {
                             setMenuOpen(false);
                             setAccessoriesOpen(false);
-        setSkincareOpen(false);
                             setMensShoesOpen(false);
                           }}
                           className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
@@ -406,7 +402,6 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                       setBagsOpen(!bagsOpen);
                       setCategoriesOpen(false);
                       setAccessoriesOpen(false);
-                      setSkincareOpen(false);
                       setMensShoesOpen(false);
                       setWomensShoesOpen(false);
                     }}
@@ -447,54 +442,6 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                   )}
                 </div>
 
-                {/* Skincare Section */}
-                <div>
-                  <button
-                    onClick={() => {
-                      setSkincareOpen(!skincareOpen);
-                      setCategoriesOpen(false);
-                      setAccessoriesOpen(false);
-                      setBagsOpen(false);
-                      setMensShoesOpen(false);
-                      setWomensShoesOpen(false);
-                    }}
-                    className="w-full text-left text-optic-body text-sm font-medium uppercase tracking-wider py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-between"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    <span>SKINCARE</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${skincareOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  {skincareOpen && (
-                    <div className="pl-4 mt-2 space-y-1">
-                      <Link
-                        to="/category/Skincare"
-                        onClick={() => {
-                          setMenuOpen(false);
-                          setSkincareOpen(false);
-                        }}
-                        className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
-                        style={{ color: 'var(--text-secondary)' }}
-                      >
-                        All Skincare
-                      </Link>
-                      {["Moisturizer", "Serum", "Cleanser", "Facewash", "Sunscreen"].map((category) => (
-                        <Link
-                          key={category}
-                          to={`/category/Skincare?subCategory=${category.toLowerCase()}`}
-                          onClick={() => {
-                            setMenuOpen(false);
-                            setSkincareOpen(false);
-                          }}
-                          className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
-                          style={{ color: 'var(--text-secondary)' }}
-                        >
-                          {category}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
                 {/* Men's Shoes Section */}
                 <div>
                   <button
@@ -503,7 +450,6 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                       setCategoriesOpen(false);
                       setAccessoriesOpen(false);
                       setBagsOpen(false);
-                      setSkincareOpen(false);
                       setWomensShoesOpen(false);
                     }}
                     className="w-full text-left text-optic-body text-sm font-medium uppercase tracking-wider py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-between"
@@ -551,7 +497,6 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                       setCategoriesOpen(false);
                       setAccessoriesOpen(false);
                       setBagsOpen(false);
-                      setSkincareOpen(false);
                       setMensShoesOpen(false);
                     }}
                     className="w-full text-left text-optic-body text-sm font-medium uppercase tracking-wider py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-between"

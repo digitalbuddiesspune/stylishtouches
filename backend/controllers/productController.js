@@ -1,7 +1,6 @@
 import Product from "../models/Product.js";
 import ContactLens from "../models/ContactLens.js";
 import Accessory from "../models/Accessory.js";
-import SkincareProduct from "../models/SkincareProduct.js";
 import Bag from "../models/Bag.js";
 import MensShoe from "../models/MensShoe.js";
 import WomensShoe from "../models/WomensShoe.js";
@@ -77,83 +76,6 @@ function normalizeAccessory(acc) {
     thumbnail: doc.thumbnail,
     brand: doc.brand,
     name: doc.name
-  };
-}
-
-// Helper function to normalize SkincareProduct to Product-like format
-function normalizeSkincareProduct(skp) {
-  const doc = skp._doc || skp;
-  
-  // Handle images - use images array if it has items, otherwise fall back to thumbnail
-  let imagesArray = [];
-  
-  // Check if images is an array
-  if (Array.isArray(doc.images) && doc.images.length > 0) {
-    // Filter out empty/null/undefined values and ensure they're strings
-    imagesArray = doc.images
-      .map(img => {
-        // Handle if image is an object with a url property
-        if (img && typeof img === 'object' && img.url) {
-          return img.url;
-        }
-        // Handle if image is a string
-        if (img && typeof img === 'string') {
-          return img.trim();
-        }
-        return null;
-      })
-      .filter(img => img && img.length > 0);
-  }
-  
-  // Fallback to thumbnail if images array is empty
-  if (imagesArray.length === 0 && doc.thumbnail) {
-    const thumb = typeof doc.thumbnail === 'string' ? doc.thumbnail.trim() : 
-                  (doc.thumbnail?.url ? doc.thumbnail.url.trim() : '');
-    if (thumb) {
-      imagesArray = [thumb];
-    }
-  }
-  
-  // Fallback to imageUrl if still empty (some products might use this field)
-  if (imagesArray.length === 0 && doc.imageUrl) {
-    const imgUrl = typeof doc.imageUrl === 'string' ? doc.imageUrl.trim() : '';
-    if (imgUrl) {
-      imagesArray = [imgUrl];
-    }
-  }
-  
-  // Calculate original price (MRP)
-  const finalPrice = doc.finalPrice || doc.price || 0;
-  const discountPercent = doc.discountPercent || 0;
-  let originalPrice = doc.originalPrice;
-  if (!originalPrice && discountPercent > 0 && finalPrice > 0) {
-    // Calculate original price from finalPrice and discountPercent
-    originalPrice = Math.round(finalPrice / (1 - discountPercent / 100));
-  } else if (!originalPrice) {
-    originalPrice = finalPrice; // No discount, original price equals final price
-  }
-
-  return {
-    _id: doc._id,
-    title: doc.productName || doc.name || '',
-    price: finalPrice, // This is the discounted price
-    originalPrice: originalPrice, // MRP
-    description: doc.description || '',
-    category: "Skincare",
-    subCategory: doc.category, // moisturizer, serum, etc.
-    product_info: {
-      brand: doc.brand || '',
-    },
-    images: imagesArray,
-    ratings: doc.rating || 0,
-    discount: discountPercent,
-    finalPrice: finalPrice,
-    _type: 'skincare',
-    // Preserve original fields that might be useful
-    thumbnail: doc.thumbnail,
-    brand: doc.brand,
-    productName: doc.productName,
-    imageUrl: doc.imageUrl
   };
 }
 
@@ -379,45 +301,6 @@ function buildAccessoryFilter(query) {
   }
   
   return conditions.length > 0 ? { $and: conditions } : { category: { $regex: `^Accessories$`, $options: "i" } };
-}
-
-// Build filter for Skincare
-function buildSkincareFilter(query) {
-  const conditions = [];
-  
-  // No top-level category filter needed - all are Skincare
-  if (query.subCategory) {
-    conditions.push({ category: { $regex: `^${query.subCategory}$`, $options: "i" } }); // category in schema is actually subcategory
-  }
-  
-  if (query.search) {
-    conditions.push({ productName: { $regex: query.search, $options: "i" } });
-  }
-  
-  if (query.priceRange) {
-    const pr = String(query.priceRange).trim();
-    let priceCond = {};
-    if (/^\d+\-\d+$/.test(pr)) {
-      const [min, max] = pr.split('-').map(n => parseInt(n, 10));
-      if (!isNaN(min)) priceCond.$gte = min;
-      if (!isNaN(max)) priceCond.$lte = max;
-    } else if (/^\d+\+$/.test(pr)) {
-      const min = parseInt(pr.replace('+',''), 10);
-      if (!isNaN(min)) priceCond.$gte = min;
-    }
-    if (Object.keys(priceCond).length) {
-      conditions.push({ $or: [
-        { price: priceCond },
-        { finalPrice: priceCond }
-      ]});
-    }
-  }
-  
-  if (query.brand) {
-    conditions.push({ brand: { $regex: `^${String(query.brand)}$`, $options: 'i' } });
-  }
-  
-  return conditions.length > 0 ? { $and: conditions } : {};
 }
 
 // Build filter for Bags
@@ -672,24 +555,6 @@ export const listProducts = async (req, res) => {
       return res.json({ products: data.map(d => normalizeAccessory(d)), pagination });
     }
     
-    // Handle Skincare
-    if (/^skincare$/i.test(requestedCategory)) {
-      const skincareFilter = buildSkincareFilter(query);
-      const [totalCount, data] = await Promise.all([
-        SkincareProduct.countDocuments(skincareFilter),
-        SkincareProduct.find(skincareFilter).sort({ _id: 1 }).skip(skip).limit(limit)
-      ]);
-      const pagination = {
-        currentPage: page,
-        totalPages: Math.ceil(totalCount / limit) || 0,
-        totalProducts: totalCount,
-        productsPerPage: limit,
-        hasNextPage: page * limit < totalCount,
-        hasPrevPage: page > 1,
-      };
-      return res.json({ products: data.map(d => normalizeSkincareProduct(d)), pagination });
-    }
-    
     // Handle Bags
     if (/^bags$/i.test(requestedCategory)) {
       const bagFilter = buildBagFilter(query);
@@ -763,7 +628,7 @@ export const listProducts = async (req, res) => {
     }
     
     // Handle other categories (Eyeglasses, Sunglasses, Computer Glasses) - use Product collection
-    if (requestedCategory && !/^contact\s+lenses|accessories|skincare|bags|men'?s?\s+shoes?|women'?s?\s+shoes?|footwear$/i.test(requestedCategory)) {
+    if (requestedCategory && !/^contact\s+lenses|accessories|bags|men'?s?\s+shoes?|women'?s?\s+shoes?|footwear$/i.test(requestedCategory)) {
       const [totalCount, data] = await Promise.all([
         Product.countDocuments(mongoFilter),
         Product.find(mongoFilter).sort({ _id: 1 }).skip(skip).limit(limit)
@@ -788,7 +653,6 @@ export const listProducts = async (req, res) => {
       const productFilter = { title: { $regex: searchTerm, $options: "i" } };
       const contactLensFilter = { title: { $regex: searchTerm, $options: "i" } };
       const accessoryFilter = { name: { $regex: searchTerm, $options: "i" } };
-      const skincareFilter = { productName: { $regex: searchTerm, $options: "i" } };
       const bagFilter = { name: { $regex: searchTerm, $options: "i" } };
       const mensShoeFilter = { title: { $regex: searchTerm, $options: "i" } };
       const womensShoeFilter = { title: { $regex: searchTerm, $options: "i" } };
@@ -798,7 +662,6 @@ export const listProducts = async (req, res) => {
         products,
         contactLenses,
         accessories,
-        skincareProducts,
         bags,
         mensShoes,
         womensShoes
@@ -806,7 +669,6 @@ export const listProducts = async (req, res) => {
         Product.find(productFilter).limit(limit * 3).lean(),
         ContactLens.find(contactLensFilter).limit(limit * 3).lean(),
         Accessory.find(accessoryFilter).limit(limit * 3).lean(),
-        SkincareProduct.find(skincareFilter).limit(limit * 3).lean(),
         Bag.find(bagFilter).limit(limit * 3).lean(),
         MensShoe.find(mensShoeFilter).limit(limit * 3).lean(),
         WomensShoe.find(womensShoeFilter).limit(limit * 3).lean()
@@ -817,7 +679,6 @@ export const listProducts = async (req, res) => {
       allResults.push(...products.map(p => ({ ...p, _type: 'product' })));
       allResults.push(...contactLenses.map(c => ({ ...c, _type: 'contactLens' })));
       allResults.push(...accessories.map(a => normalizeAccessory(a)));
-      allResults.push(...skincareProducts.map(s => normalizeSkincareProduct(s)));
       allResults.push(...bags.map(b => normalizeBag(b)));
       allResults.push(...mensShoes.map(m => normalizeMensShoe(m)));
       allResults.push(...womensShoes.map(w => normalizeWomensShoe(w)));
@@ -943,12 +804,6 @@ export const getProductById = async (req, res) => {
       return res.json(normalizeAccessory(product));
     }
     
-    // Try SkincareProduct collection
-    product = await SkincareProduct.findById(id);
-    if (product) {
-      return res.json(normalizeSkincareProduct(product));
-    }
-    
     // Try Bag collection
     product = await Bag.findById(id);
     if (product) {
@@ -1064,17 +919,6 @@ export const getFacets = async (req, res) => {
         { $facet: {
           genders: [ { $group: { _id: { $toUpper: "$gender" }, count: { $sum: 1 } } } ],
           subCategories: [ { $group: { _id: { $toUpper: "$subCategory" }, count: { $sum: 1 } } } ],
-          prices: [ { $group: { _id: null, values: { $push: { $ifNull: ["$finalPrice", "$price"] } } } } ]
-        } }
-      ]);
-    }
-    // Handle Skincare
-    else if (/^skincare$/i.test(requestedCategory)) {
-      const skincareFilter = buildSkincareFilter(query);
-      dataAgg = await SkincareProduct.aggregate([
-        { $match: skincareFilter },
-        { $facet: {
-          subCategories: [ { $group: { _id: { $toUpper: "$category" }, count: { $sum: 1 } } } ],
           prices: [ { $group: { _id: null, values: { $push: { $ifNull: ["$finalPrice", "$price"] } } } } ]
         } }
       ]);

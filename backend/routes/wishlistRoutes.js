@@ -3,7 +3,6 @@ import Wishlist from '../models/Wishlist.js';
 import Product from '../models/Product.js';
 import ContactLens from '../models/ContactLens.js';
 import Accessory from '../models/Accessory.js';
-import SkincareProduct from '../models/SkincareProduct.js';
 import Bag from '../models/Bag.js';
 import MensShoe from '../models/MensShoe.js';
 import WomensShoe from '../models/WomensShoe.js';
@@ -69,52 +68,6 @@ async function resolveItem(productId) {
       finalPrice: finalPrice,
       images: imagesArray,
       Images: doc.Images
-    };
-  }
-  
-  doc = await SkincareProduct.findById(productId).lean();
-  if (doc) {
-    // Handle images
-    let imagesArray = [];
-    if (Array.isArray(doc.images) && doc.images.length > 0) {
-      imagesArray = doc.images
-        .map(img => {
-          if (img && typeof img === 'object' && img.url) return img.url;
-          if (img && typeof img === 'string') return img.trim();
-          return null;
-        })
-        .filter(img => img && img.length > 0);
-    }
-    if (imagesArray.length === 0 && doc.thumbnail) {
-      const thumb = typeof doc.thumbnail === 'string' ? doc.thumbnail.trim() : 
-                    (doc.thumbnail?.url ? doc.thumbnail.url.trim() : '');
-      if (thumb) imagesArray = [thumb];
-    }
-    if (imagesArray.length === 0 && doc.imageUrl) {
-      imagesArray = [doc.imageUrl];
-    }
-    
-    // Calculate originalPrice
-    const finalPrice = doc.finalPrice || doc.price || 0;
-    const discountPercent = doc.discountPercent || 0;
-    let originalPrice = doc.originalPrice;
-    if (!originalPrice && discountPercent > 0 && finalPrice > 0) {
-      originalPrice = Math.round(finalPrice / (1 - discountPercent / 100));
-    } else if (!originalPrice) {
-      originalPrice = finalPrice;
-    }
-    
-    return {
-      ...doc,
-      _type: 'skincare',
-      title: doc.productName || doc.name || '',
-      name: doc.productName || doc.name || '',
-      price: finalPrice,
-      originalPrice: originalPrice,
-      discount: discountPercent,
-      discountPercent: discountPercent,
-      finalPrice: finalPrice,
-      images: imagesArray
     };
   }
   
@@ -269,12 +222,11 @@ wishlistRouter.post('/add', verifyToken, async (req, res) => {
     const existsInProduct = await Product.exists({ _id: productId });
     const existsInContact = !existsInProduct && await ContactLens.exists({ _id: productId });
     const existsInAccessory = !existsInProduct && !existsInContact && await Accessory.exists({ _id: productId });
-    const existsInSkincare = !existsInProduct && !existsInContact && !existsInAccessory && await SkincareProduct.exists({ _id: productId });
-    const existsInBag = !existsInProduct && !existsInContact && !existsInAccessory && !existsInSkincare && await Bag.exists({ _id: productId });
-    const existsInMensShoe = !existsInProduct && !existsInContact && !existsInAccessory && !existsInSkincare && !existsInBag && await MensShoe.exists({ _id: productId });
-    const existsInWomensShoe = !existsInProduct && !existsInContact && !existsInAccessory && !existsInSkincare && !existsInBag && !existsInMensShoe && await WomensShoe.exists({ _id: productId });
+    const existsInBag = !existsInProduct && !existsInContact && !existsInAccessory && await Bag.exists({ _id: productId });
+    const existsInMensShoe = !existsInProduct && !existsInContact && !existsInAccessory && !existsInBag && await MensShoe.exists({ _id: productId });
+    const existsInWomensShoe = !existsInProduct && !existsInContact && !existsInAccessory && !existsInBag && !existsInMensShoe && await WomensShoe.exists({ _id: productId });
     
-    if (!existsInProduct && !existsInContact && !existsInAccessory && !existsInSkincare && !existsInBag && !existsInMensShoe && !existsInWomensShoe) {
+    if (!existsInProduct && !existsInContact && !existsInAccessory && !existsInBag && !existsInMensShoe && !existsInWomensShoe) {
       return res.status(404).json({ message: 'Product not found' });
     }
 

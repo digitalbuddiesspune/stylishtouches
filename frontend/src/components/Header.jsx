@@ -47,7 +47,7 @@ const AccessoriesDropdown = () => {
     }
   };
 
-  const subcategories = ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs"];
+  const subcategories = ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs", "Watches"];
 
   return (
     <div className="relative" ref={accessoriesRef}>
@@ -151,86 +151,6 @@ const BagsDropdown = () => {
             </button>
             <div className="border-t border-gray-200 my-1"></div>
             {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => handleCategorySelect(category)}
-                className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs sm:text-sm font-medium rounded-md sm:rounded-lg group"
-              >
-                <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">{category}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Skincare Dropdown Component
-const SkincareDropdown = () => {
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [isSkincareOpen, setIsSkincareOpen] = useState(false);
-  const navigate = useNavigate();
-  const skincareRef = useRef(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (skincareRef.current && !skincareRef.current.contains(event.target)) {
-        setIsSkincareOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    setIsSkincareOpen(false);
-    if (category === "All") {
-      navigate(`/category/Skincare`);
-    } else {
-      // Use subCategory parameter for skincare subcategories to avoid conflict with main category
-      const params = new URLSearchParams({ subCategory: category.toLowerCase() });
-      navigate(`/category/Skincare?${params.toString()}`);
-    }
-  };
-
-  // Handle clicking on the Skincare button itself
-  const handleSkincareClick = () => {
-    if (!isSkincareOpen) {
-      setIsSkincareOpen(true);
-    } else {
-      // If dropdown is open and user clicks button again, navigate to all skincare
-      navigate(`/category/Skincare`);
-      setIsSkincareOpen(false);
-    }
-  };
-
-  const subcategories = ["Moisturizer", "Serum", "Cleanser", "Facewash", "Sunscreen"];
-
-  return (
-    <div className="relative" ref={skincareRef}>
-      <button
-        onClick={handleSkincareClick}
-        className="group flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg sm:rounded-xl hover:border-sky-400 hover:bg-sky-50 hover:shadow-lg transition-all duration-300 text-xs sm:text-sm font-medium text-gray-700 shadow-sm min-w-[100px] sm:min-w-[140px] justify-between"
-      >
-        <span className="group-hover:text-sky-700 transition-colors truncate">
-            <span>Skincare</span>
-        </span>
-        <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-sky-600 transition-all duration-200 flex-shrink-0 ${isSkincareOpen ? 'rotate-180' : ''}`} />
-      </button>
-      {isSkincareOpen && (
-        <div className="absolute top-full left-0 mt-2 w-48 sm:w-52 md:w-56 bg-white/95 backdrop-blur-lg border border-gray-200 rounded-lg sm:rounded-xl shadow-2xl z-[100] max-h-[70vh] sm:max-h-96 overflow-y-auto">
-          <div className="p-1 sm:p-2">
-            <button
-              onClick={() => handleCategorySelect("All")}
-              className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs sm:text-sm font-medium rounded-md sm:rounded-lg group font-semibold"
-            >
-              <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">All Skincare</span>
-            </button>
-            <div className="border-t border-gray-200 my-1"></div>
-            {subcategories.map((category) => (
               <button
                 key={category}
                 onClick={() => handleCategorySelect(category)}
@@ -467,7 +387,7 @@ const CategoryDropdowns = () => {
         {isCategoryOpen && (
           <div className="absolute top-full left-0 mt-2 w-52 bg-white/95 backdrop-blur-lg border border-gray-200 rounded-xl shadow-2xl z-[100] max-h-80 overflow-y-auto">
             <div className="p-2">
-              {Object.keys(categories).filter(key => key !== 'accessories' && key !== 'skincare').map((key) => (
+              {Object.keys(categories).filter(key => key !== 'accessories').map((key) => (
                 <button
                   key={key}
                   onClick={() => handleCategorySelect(key)}
@@ -697,7 +617,6 @@ const Header = () => {
             <CategoryDropdowns />
             <AccessoriesDropdown />
             <BagsDropdown />
-            <SkincareDropdown />
             <MensShoesDropdown />
             <WomensShoesDropdown />
           </div>

@@ -73,7 +73,7 @@ const ProductDetails = () => {
       return [product.thumbnail];
     }
     
-    // Fallback to imageUrl (for skincare)
+    // Fallback to imageUrl
     if (product.imageUrl && product.imageUrl.trim() !== '') {
       return [product.imageUrl];
     }
@@ -413,124 +413,134 @@ const ProductDetails = () => {
             <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
               <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Product Details</h3>
               <div className="space-y-3">
-                {product.product_info?.brand && (
-                  <div className="flex justify-between py-2 border-b border-gray-100 text-sm sm:text-base">
-                    <span className="text-gray-600">Brand</span>
-                    <span className="font-medium text-gray-900">
-                      {product.product_info.brand}
-                    </span>
-                  </div>
-                )}
-                {product.product_info?.gender && (
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Gender</span>
-                    <span className="font-medium text-gray-900">
-                      {mapGender(product.product_info.gender)}
-                    </span>
-                  </div>
-                )}
-                {product.product_info?.size && (
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Size</span>
-                    <span className="font-medium text-gray-900">
-                      {product.product_info.size}
-                    </span>
-                  </div>
-                )}
-                {product.product_info?.frameShape && (
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Frame Shape</span>
-                    <span className="font-medium text-gray-900">
-                      {product.product_info.frameShape}
-                    </span>
-                  </div>
-                )}
-                {product.product_info?.frameMaterial && (
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Material</span>
-                    <span className="font-medium text-gray-900">
-                      {product.product_info.frameMaterial}
-                    </span>
-                  </div>
-                )}
-                {(product.product_info?.frameColor || product.product_info?.color) && (
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Color</span>
-                    <span className="font-medium text-gray-900">
-                      {product.product_info.frameColor || product.product_info.color}
-                    </span>
-                  </div>
-                )}
-                {(product.product_info?.rimDetails || product.product_info?.rimType) && (
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Rim</span>
-                    <span className="font-medium text-gray-900">
-                      {product.product_info.rimDetails || product.product_info.rimType}
-                    </span>
-                  </div>
-                )}
-                {product.product_info?.warranty && (
-                  <div className="flex justify-between py-2">
-                    <span className="text-gray-600">Warranty</span>
-                    <span className="font-medium text-gray-900">
-                      {product.product_info.warranty}
-                    </span>
-                  </div>
-                )}
+                {/* Helper function to format field labels */}
+                {(() => {
+                  const formatLabel = (key) => {
+                    // Convert camelCase to Title Case with spaces
+                    return key
+                      .replace(/([A-Z])/g, ' $1')
+                      .replace(/^./, str => str.toUpperCase())
+                      .trim();
+                  };
 
-                {/* Lens-only fields */}
-                {product.category?.toLowerCase().includes("lens") && (
-                  <>
-                    {product.product_info?.disposability && (
-                      <div className="flex justify-between py-2 border-t border-gray-100">
-                        <span className="text-gray-600">Disposability</span>
-                        <span className="font-medium text-gray-900">
-                          {product.product_info.disposability}
+                  // Fields to skip (handled separately or not useful)
+                  const skipFields = new Set(['powerOptions']);
+                  
+                  // Fields that should have special labels
+                  const labelMap = {
+                    'brand': 'Brand',
+                    'gender': 'Gender',
+                    'color': 'Color',
+                    'frameColor': 'Color',
+                    'frameShape': 'Frame Shape',
+                    'frameMaterial': 'Material',
+                    'rimDetails': 'Rim Details',
+                    'rimType': 'Rim Type',
+                    'size': 'Size',
+                    'warranty': 'Warranty',
+                    'outerMaterial': 'Outer Material',
+                    'soleMaterial': 'Sole Material',
+                    'innerMaterial': 'Inner Material',
+                    'closureType': 'Closure Type',
+                    'heelHeight': 'Heel Height',
+                    'toeShape': 'Toe Shape',
+                    'embellishments': 'Embellishments',
+                    'disposability': 'Disposability',
+                    'usage': 'Usage',
+                    'usageDuration': 'Usage Duration',
+                    'waterContent': 'Water Content',
+                    'baseCurve': 'Base Curve',
+                    'diameter': 'Diameter',
+                    'packaging': 'Packaging',
+                    'power': 'Power',
+                    'solution': 'Solution'
+                  };
+
+                  const productInfo = product.product_info || {};
+                  const details = [];
+
+                  // Add subCategory if it exists
+                  if (product.subCategory) {
+                    details.push({
+                      key: 'subCategory',
+                      label: 'Category',
+                      value: product.subCategory
+                    });
+                  }
+
+                  // Add subSubCategory if it exists
+                  if (product.subSubCategory) {
+                    details.push({
+                      key: 'subSubCategory',
+                      label: 'Sub Category',
+                      value: product.subSubCategory
+                    });
+                  }
+
+                  // Process all product_info fields
+                  Object.keys(productInfo).forEach(key => {
+                    if (skipFields.has(key)) return;
+                    
+                    const value = productInfo[key];
+                    
+                    // Skip null, undefined, empty strings, and empty arrays
+                    if (value === null || value === undefined || value === '' || 
+                        (Array.isArray(value) && value.length === 0)) {
+                      return;
+                    }
+
+                    // Handle arrays (like embellishments)
+                    let displayValue = value;
+                    if (Array.isArray(value)) {
+                      displayValue = value.join(', ');
+                    }
+
+                    details.push({
+                      key,
+                      label: labelMap[key] || formatLabel(key),
+                      value: displayValue
+                    });
+                  });
+
+                  // Remove duplicates (e.g., if both color and frameColor exist, prefer color)
+                  const seenLabels = new Set();
+                  const uniqueDetails = details.filter(detail => {
+                    // Special handling for color fields - prefer 'color' over 'frameColor'
+                    if (detail.key === 'frameColor' && seenLabels.has('Color')) {
+                      return false;
+                    }
+                    if (detail.key === 'color' && seenLabels.has('Color')) {
+                      return false;
+                    }
+                    
+                    if (seenLabels.has(detail.label)) {
+                      return false;
+                    }
+                    seenLabels.add(detail.label);
+                    return true;
+                  });
+
+                  // Render details
+                  return uniqueDetails.map((detail, index) => {
+                    // Handle gender specially
+                    let displayValue = detail.value;
+                    if (detail.key === 'gender') {
+                      displayValue = mapGender(detail.value);
+                    }
+
+                    return (
+                      <div 
+                        key={detail.key} 
+                        className={`flex justify-between py-2 ${index < uniqueDetails.length - 1 ? 'border-b border-gray-100' : ''} text-sm sm:text-base`}
+                      >
+                        <span className="text-gray-600">{detail.label}</span>
+                        <span className="font-medium text-gray-900 text-right max-w-[60%] break-words">
+                          {displayValue}
                         </span>
                       </div>
-                    )}
-                    {product.product_info?.usage && (
-                      <div className="flex justify-between py-2">
-                        <span className="text-gray-600">Usage</span>
-                        <span className="font-medium text-gray-900">
-                          {product.product_info.usage}
-                        </span>
-                      </div>
-                    )}
-                    {product.product_info?.waterContent && (
-                      <div className="flex justify-between py-2">
-                        <span className="text-gray-600">Water Content</span>
-                        <span className="font-medium text-gray-900">
-                          {product.product_info.waterContent}
-                        </span>
-                      </div>
-                    )}
-                    {product.product_info?.baseCurve && (
-                      <div className="flex justify-between py-2">
-                        <span className="text-gray-600">Base Curve</span>
-                        <span className="font-medium text-gray-900">
-                          {product.product_info.baseCurve}
-                        </span>
-                      </div>
-                    )}
-                    {product.product_info?.diameter && (
-                      <div className="flex justify-between py-2">
-                        <span className="text-gray-600">Diameter</span>
-                        <span className="font-medium text-gray-900">
-                          {product.product_info.diameter}
-                        </span>
-                      </div>
-                    )}
-                    {product.product_info?.packaging && (
-                      <div className="flex justify-between py-2">
-                        <span className="text-gray-600">Packaging</span>
-                        <span className="font-medium text-gray-900">
-                          {product.product_info.packaging}
-                        </span>
-                      </div>
-                    )}
-                  </>
-                )}
+                    );
+                  });
+                })()}
               </div>
             </div>
 

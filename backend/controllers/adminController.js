@@ -2,7 +2,6 @@ import Product from "../models/Product.js";
 import Order from "../models/Order.js";
 import ContactLens from "../models/ContactLens.js";
 import Accessory from "../models/Accessory.js";
-import SkincareProduct from "../models/SkincareProduct.js";
 import Bag from "../models/Bag.js";
 import MensShoe from "../models/MensShoe.js";
 import WomensShoe from "../models/WomensShoe.js";
@@ -48,73 +47,6 @@ function normalizeAccessory(acc) {
     thumbnail: doc.thumbnail,
     brand: doc.brand,
     name: doc.name
-  };
-}
-
-// Helper function to normalize SkincareProduct to Product-like format
-function normalizeSkincareProduct(skp) {
-  const doc = skp._doc || skp;
-  let imagesArray = [];
-  
-  if (Array.isArray(doc.images) && doc.images.length > 0) {
-    imagesArray = doc.images
-      .map(img => {
-        if (img && typeof img === 'object' && img.url) {
-          return img.url;
-        }
-        if (img && typeof img === 'string') {
-          return img.trim();
-        }
-        return null;
-      })
-      .filter(img => img && img.length > 0);
-  }
-  
-  if (imagesArray.length === 0 && doc.thumbnail) {
-    const thumb = typeof doc.thumbnail === 'string' ? doc.thumbnail.trim() : 
-                  (doc.thumbnail?.url ? doc.thumbnail.url.trim() : '');
-    if (thumb) {
-      imagesArray = [thumb];
-    }
-  }
-  
-  if (imagesArray.length === 0 && doc.imageUrl) {
-    const imgUrl = typeof doc.imageUrl === 'string' ? doc.imageUrl.trim() : '';
-    if (imgUrl) {
-      imagesArray = [imgUrl];
-    }
-  }
-  
-  // Calculate original price (MRP)
-  const finalPrice = doc.finalPrice || doc.price || 0;
-  const discountPercent = doc.discountPercent || 0;
-  let originalPrice = doc.originalPrice;
-  if (!originalPrice && discountPercent > 0 && finalPrice > 0) {
-    originalPrice = Math.round(finalPrice / (1 - discountPercent / 100));
-  } else if (!originalPrice) {
-    originalPrice = finalPrice;
-  }
-
-  return {
-    _id: doc._id,
-    title: doc.productName || doc.name || '',
-    price: finalPrice,
-    originalPrice: originalPrice,
-    description: doc.description || '',
-    category: "Skincare",
-    subCategory: doc.category,
-    product_info: {
-      brand: doc.brand || '',
-    },
-    images: imagesArray,
-    ratings: doc.rating || 0,
-    discount: discountPercent,
-    finalPrice: finalPrice,
-    _type: 'skincare',
-    thumbnail: doc.thumbnail,
-    brand: doc.brand,
-    productName: doc.productName,
-    imageUrl: doc.imageUrl
   };
 }
 
@@ -269,11 +201,10 @@ function normalizeWomensShoe(shoe) {
 export const listAllProducts = async (req, res) => {
   try {
     // Get ALL products from all collections for admin dashboard
-    const [products, contactLenses, accessories, skincareProducts, bags, mensShoes, womensShoes] = await Promise.all([
+    const [products, contactLenses, accessories, bags, mensShoes, womensShoes] = await Promise.all([
       Product.find({}).sort({ createdAt: -1 }).lean(),
       ContactLens.find({}).sort({ createdAt: -1 }).lean(),
       Accessory.find({}).sort({ createdAt: -1 }).lean(),
-      SkincareProduct.find({}).sort({ createdAt: -1 }).lean(),
       Bag.find({}).sort({ createdAt: -1 }).lean(),
       MensShoe.find({}).sort({ createdAt: -1 }).lean(),
       WomensShoe.find({}).sort({ createdAt: -1 }).lean(),
@@ -283,7 +214,6 @@ export const listAllProducts = async (req, res) => {
     const taggedProducts = products.map((p) => ({ ...p, _type: "product" }));
     const taggedContactLenses = contactLenses.map((c) => ({ ...c, _type: "contactLens" }));
     const normalizedAccessories = accessories.map(normalizeAccessory);
-    const normalizedSkincare = skincareProducts.map(normalizeSkincareProduct);
     const normalizedBags = bags.map(normalizeBag);
     const normalizedMensShoes = mensShoes.map(normalizeMensShoe);
     const normalizedWomensShoes = womensShoes.map(normalizeWomensShoe);
@@ -293,7 +223,6 @@ export const listAllProducts = async (req, res) => {
       ...taggedProducts,
       ...taggedContactLenses,
       ...normalizedAccessories,
-      ...normalizedSkincare,
       ...normalizedBags,
       ...normalizedMensShoes,
       ...normalizedWomensShoes
