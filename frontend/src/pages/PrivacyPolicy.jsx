@@ -1,5 +1,5 @@
 import React from "react";
-import { Shield, Lock, Eye, FileText, Users, CheckCircle2, Mail } from "lucide-react";
+import { Shield, Lock, Eye, FileText, Users, CheckCircle2, Mail, Clock } from "lucide-react";
 
 const PrivacyPolicy = () => {
   const sections = [
@@ -27,6 +27,18 @@ const PrivacyPolicy = () => {
         "To improve customer service",
         "To communicate promotions and updates"
       ]
+    },
+    {
+      icon: Clock,
+      title: "Data Retention Period",
+      content: "We retain your personal data only for as long as necessary to fulfill the purposes outlined in this policy:",
+      list: [
+        "Order and billing information: Retained for up to 7 years to comply with legal, tax, and accounting requirements",
+        "Customer account information: Retained as long as your account remains active",
+        "Marketing and communication data: Retained until you unsubscribe or request deletion",
+        "Website analytics and cookies: Retained for a limited period as defined by our analytics and cookie providers"
+      ],
+      closing: "Once the retention period expires, your data is securely deleted or anonymized."
     },
     {
       icon: Lock,
@@ -95,7 +107,7 @@ const PrivacyPolicy = () => {
                     {section.content}
                   </p>
                   {section.list && (
-                    <ul className="space-y-2 sm:space-y-3 ml-2">
+                    <ul className="space-y-2 sm:space-y-3 ml-2 mb-3 sm:mb-4">
                       {section.list.map((item, idx) => (
                         <li key={idx} className="flex items-start gap-2 sm:gap-3">
                           <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: 'var(--accent-yellow)' }}></div>
@@ -103,6 +115,11 @@ const PrivacyPolicy = () => {
                         </li>
                       ))}
                     </ul>
+                  )}
+                  {section.closing && (
+                    <p className="text-optic-body text-sm sm:text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                      {section.closing}
+                    </p>
                   )}
                 </div>
               );
