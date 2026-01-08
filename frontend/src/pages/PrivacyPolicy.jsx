@@ -29,18 +29,6 @@ const PrivacyPolicy = () => {
       ]
     },
     {
-      icon: Clock,
-      title: "Data Retention Period",
-      content: "We retain your personal data only for as long as necessary to fulfill the purposes outlined in this policy:",
-      list: [
-        "Order and billing information: Retained for up to 7 years to comply with legal, tax, and accounting requirements",
-        "Customer account information: Retained as long as your account remains active",
-        "Marketing and communication data: Retained until you unsubscribe or request deletion",
-        "Website analytics and cookies: Retained for a limited period as defined by our analytics and cookie providers"
-      ],
-      closing: "Once the retention period expires, your data is securely deleted or anonymized."
-    },
-    {
       icon: Lock,
       title: "Data Security",
       content: "We implement advanced security measures to protect your data. Transactions are encrypted and processed securely."
@@ -49,6 +37,18 @@ const PrivacyPolicy = () => {
       icon: Users,
       title: "Third-Party Sharing",
       content: "We do not sell your personal data. However, we may share it with trusted partners like payment processors and logistics providers."
+    },
+    {
+      icon: Clock,
+      title: "Data Retention Policy",
+      content: "We retain your data according to the following retention periods:",
+      list: [
+        "Customer account information is retained while the account is active and up to 3 years after closure.",
+        "Order, invoice, payment, and GST-related records are retained for a minimum of 8 years as required by law.",
+        "KYC documents, where applicable, are retained during the business relationship and for 5 years thereafter.",
+        "Marketing and analytics data is retained until consent is withdrawn or for a maximum of 24 months.",
+        "Data is securely deleted or anonymized once the retention period expires, unless legally required otherwise."
+      ]
     },
     {
       icon: CheckCircle2,
@@ -107,7 +107,7 @@ const PrivacyPolicy = () => {
                     {section.content}
                   </p>
                   {section.list && (
-                    <ul className="space-y-2 sm:space-y-3 ml-2 mb-3 sm:mb-4">
+                    <ul className="space-y-2 sm:space-y-3 ml-2">
                       {section.list.map((item, idx) => (
                         <li key={idx} className="flex items-start gap-2 sm:gap-3">
                           <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: 'var(--accent-yellow)' }}></div>
@@ -115,11 +115,6 @@ const PrivacyPolicy = () => {
                         </li>
                       ))}
                     </ul>
-                  )}
-                  {section.closing && (
-                    <p className="text-optic-body text-sm sm:text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                      {section.closing}
-                    </p>
                   )}
                 </div>
               );
