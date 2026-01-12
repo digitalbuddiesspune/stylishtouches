@@ -56,24 +56,24 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <div className="card-product">
+    <div className="card-product relative h-full flex flex-col">
       {/* Heart icon overlay */}
       <div 
-        className="absolute top-4 right-4 z-10 cursor-pointer p-2 rounded-full shadow-md hover:scale-110 transition-all duration-200" 
+        className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10 cursor-pointer p-1.5 sm:p-2 rounded-full shadow-md hover:scale-110 transition-all duration-200" 
         style={{ backgroundColor: 'var(--bg-secondary)' }}
         onClick={toggleWishlist}
       >
         <Heart 
           color={isWishlisted ? "#ef4444" : "#6b7280"} 
           fill={isWishlisted ? "#ef4444" : "none"} 
-          size={20}
-          className="transition-all duration-200"
+          size={16}
+          className="sm:w-5 sm:h-5 transition-all duration-200"
         />
       </div>
 
       {/* Product Image */}
-      <div className="relative mb-6">
-        <div className="aspect-square rounded-2xl overflow-hidden bg-gray-100">
+      <div className="relative mb-2 sm:mb-3 md:mb-4 px-2 sm:px-3 md:px-4 pt-2 sm:pt-3 md:pt-4">
+        <div className="aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-gray-100">
           <img
             src={imageSrc}
             alt={product.title}
@@ -84,34 +84,36 @@ const ProductCard = ({ product }) => {
       </div>
 
       {/* Product Info */}
-      <h3 
-        className="text-optic-heading text-lg font-bold mb-2 cursor-pointer hover:opacity-80 transition-opacity"
-        style={{ color: 'var(--text-primary)' }}
-        onClick={() => navigate(`/product/${product._id}`)}
-      >
-        {product.title}
-      </h3>
-      
-      <p className="text-optic-body text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-        {product.category || 'vision'}
-      </p>
-      
-      <div className="text-optic-heading text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-        ₹{discountedPrice}
-        {originalPrice > discountedPrice && (
-          <span className="text-sm font-normal line-through ml-2" style={{ color: 'var(--text-secondary)' }}>
-            ₹{originalPrice}
-          </span>
-        )}
+      <div className="flex-1 flex flex-col px-2 sm:px-3 md:px-4 pb-2 sm:pb-3 md:pb-4">
+        <h3 
+          className="text-optic-heading text-sm sm:text-base md:text-lg font-bold mb-1 sm:mb-2 cursor-pointer hover:opacity-80 transition-opacity line-clamp-2"
+          style={{ color: 'var(--text-primary)' }}
+          onClick={() => navigate(`/product/${product._id}`)}
+        >
+          {product.title}
+        </h3>
+        
+        <p className="text-optic-body text-xs sm:text-sm mb-2 sm:mb-3 md:mb-4" style={{ color: 'var(--text-secondary)' }}>
+          {product.category || 'vision'}
+        </p>
+        
+        <div className="text-optic-heading text-base sm:text-lg md:text-xl font-bold mb-2 sm:mb-3 md:mb-4" style={{ color: 'var(--text-primary)' }}>
+          ₹{discountedPrice}
+          {originalPrice > discountedPrice && (
+            <span className="text-xs sm:text-sm font-normal line-through ml-1 sm:ml-2" style={{ color: 'var(--text-secondary)' }}>
+              ₹{originalPrice}
+            </span>
+          )}
+        </div>
+        
+        {/* Add Button */}
+        <button 
+          onClick={() => addToCart(product)}
+          className="btn-accent mx-auto mt-auto w-8 h-8 sm:w-10 sm:h-10"
+        >
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+        </button>
       </div>
-      
-      {/* Add Button */}
-      <button 
-        onClick={() => addToCart(product)}
-        className="btn-accent mx-auto"
-      >
-        <Plus className="w-5 h-5" />
-      </button>
     </div>
   );
 };

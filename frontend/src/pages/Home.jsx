@@ -137,7 +137,7 @@ const Home = ({ addToCart, addToWishlist }) => {
 
       {/* Categories Section - OPTIC Style */}
       <section className="relative pt-12 sm:pt-16 md:pt-20 pb-8 sm:pb-10" style={{ backgroundColor: 'var(--bg-primary)' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto sm:px-6">
           <div className="text-center mb-12 sm:mb-16">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-full text-sm font-medium mb-4">
               <TrendingUp className="w-4 h-4" />
@@ -150,38 +150,38 @@ const Home = ({ addToCart, addToWishlist }) => {
               From classic frames to modern designs, find the perfect eyewear for every occasion
             </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
             {categories.map((cat, i) => {
               return (
               <Link 
                 key={i}
                 to={cat.link}
-                className={`group relative ${cat.color} rounded-2xl p-8 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 overflow-hidden`}
+                className={`group relative ${cat.color} rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 overflow-hidden`}
               >
                 {/* Background pattern */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500">
                   <div className="absolute inset-0 bg-gradient-to-br from-sky-400 to-indigo-600"></div>
                 </div>
                 
-                <div className="relative flex flex-col items-center text-center space-y-6">
-                  <div className="w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <cat.icon size={32} className="text-gray-700" />
+                <div className="relative flex flex-col items-center text-center space-y-3 sm:space-y-4 md:space-y-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 bg-white rounded-xl sm:rounded-2xl shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <cat.icon size={20} className="sm:w-6 sm:h-6 md:w-8 md:h-8 text-gray-700" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{cat.name}</h3>
-                    <p className="text-sm text-gray-600">Premium collection</p>
+                    <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-gray-900 mb-1 sm:mb-2">{cat.name}</h3>
+                    <p className="text-xs sm:text-sm text-gray-600">Premium collection</p>
                   </div>
                   <div className="relative w-full">
                     <img 
                       src={cat.image} 
                       alt={cat.name}
-                      className="w-full h-48 object-cover rounded-xl shadow-md " 
+                      className="w-full h-32 sm:h-40 md:h-48 object-cover rounded-lg sm:rounded-xl shadow-md" 
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg sm:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
-                  <div className="flex items-center gap-2 text-sky-600 font-medium group-hover:text-sky-700 transition-colors">
+                  <div className="flex items-center gap-1 sm:gap-2 text-sky-600 font-medium group-hover:text-sky-700 transition-colors text-xs sm:text-sm">
                     <span>Shop Now</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </Link>
@@ -192,7 +192,7 @@ const Home = ({ addToCart, addToWishlist }) => {
       </section>
       {/* Featured Products */}
       <section className="relative pt-12 sm:pt-16 md:pt-20" style={{ backgroundColor: 'var(--bg-primary)' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto sm:px-6">
           <div className="text-center mb-20">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-full text-sm font-medium mb-6 border border-purple-200">
               <Star className="w-4 h-4" />
@@ -201,7 +201,7 @@ const Home = ({ addToCart, addToWishlist }) => {
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6">
               Featured <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">Products</span>
             </h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed sm:px-4">
               Handpicked selection of our most popular and stylish eyewear
             </p>
           </div>
@@ -233,7 +233,7 @@ const Home = ({ addToCart, addToWishlist }) => {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 ">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
                 {products.slice(0, 6).map((product) => (
                   <ProductCard
                     key={product._id}

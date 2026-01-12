@@ -844,7 +844,7 @@ export default function CategoryPage({ addToCart, addToWishlist }) {
           {/* Products grid */}
           <div className="md:col-span-3">
             <div
-              className={`grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 transition-all duration-500 ease-in-out ${
+              className={`grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 transition-all duration-500 ease-in-out ${
                 visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
               }`}
             >
