@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, Grid, Heart, ShoppingBag, User, Eye, Sun, Monitor, Phone, Sparkles, ShoppingBag as BagIcon, Footprints, X, ChevronLeft } from "lucide-react";
+import { Home, Grid, Heart, ShoppingBag, User, Eye, Sun, Monitor, Phone, Sparkles, ShoppingBag as BagIcon, Footprints, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { CartContext } from "../context/CartContext";
 import { useUser } from "../context/UserContext";
 
@@ -57,7 +57,10 @@ const MobileBottomNav = () => {
   };
 
   const handleCategoryClick = (category) => {
-    if (category.subcategories && category.subcategories.length > 0) {
+    if (category.isParent && category.children) {
+      // Show children categories for parent category
+      setSelectedCategory(category);
+    } else if (category.subcategories && category.subcategories.length > 0) {
       // Show subcategories
       setSelectedCategory(category);
     } else {
@@ -86,10 +89,11 @@ const MobileBottomNav = () => {
     { icon: Sun, name: "Sunglasses", link: "/category/Sunglasses", subcategories: null },
     { icon: Monitor, name: "Computer Glasses", link: "/category/Computer%20Glasses", subcategories: null },
     { icon: Phone, name: "Contact Lenses", link: "/category/Contact%20Lenses", subcategories: null },
-    { icon: Sparkles, name: "Accessories", link: "/category/Accessories", subcategories: ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs", "Watches"] },
-    { icon: BagIcon, name: "Bags", link: "/category/Bags", subcategories: ["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"] },
-    { icon: Footprints, name: "Men's Shoes", link: "/category/Men's%20Shoes", subcategories: ["Formal", "Sneakers", "Boots"] },
-    { icon: Footprints, name: "Women's Shoes", link: "/category/Women's%20Shoes", subcategories: ["Heels", "Flats", "Sneakers", "Boots", "Sandals"] },
+    { icon: Sparkles, name: "Women's Products", link: "#", subcategories: null, isParent: true, children: [
+      { icon: Sparkles, name: "Accessories", link: "/category/Accessories", subcategories: ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs", "Watches"] },
+      { icon: BagIcon, name: "Bags", link: "/category/Bags", subcategories: ["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"] },
+      { icon: Footprints, name: "Women's Shoes", link: "/category/Women's%20Shoes", subcategories: ["Heels", "Flats", "Sneakers", "Boots", "Sandals"] },
+    ]},
   ];
 
   const handleAccountClick = () => {
@@ -189,46 +193,102 @@ const MobileBottomNav = () => {
             {/* Content */}
             <div className="flex-1 overflow-y-auto px-6 py-6">
               {selectedCategory ? (
-                // Subcategories View
+                // Subcategories or Children View
                 <div>
-                  {/* All Category Option */}
-                  <button
-                    onClick={() => handleAllCategorySelect(selectedCategory)}
-                    className="w-full flex items-center justify-between p-4 mb-3 rounded-xl border-2 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 transition-all duration-200 active:scale-95"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-yellow-400 flex items-center justify-center">
-                        {React.createElement(selectedCategory.icon, { className: "w-5 h-5 text-gray-900" })}
-                      </div>
-                      <span className="text-base font-semibold text-gray-900">All {selectedCategory.name}</span>
+                  {selectedCategory.isParent && selectedCategory.children ? (
+                    // Parent category with children (e.g., Women's Products)
+                    <div className="space-y-3">
+                      {selectedCategory.children.map((child) => {
+                        const Icon = child.icon;
+                        return (
+                          <div key={child.name} className="space-y-2">
+                            <button
+                              onClick={() => {
+                                if (child.subcategories && child.subcategories.length > 0) {
+                                  setSelectedCategory(child);
+                                } else {
+                                  navigate(child.link);
+                                  setCategoriesOpen(false);
+                                  setSelectedCategory(null);
+                                }
+                              }}
+                              className="w-full flex items-center justify-between p-4 rounded-xl border-2 border-gray-200 bg-white hover:border-yellow-300 hover:bg-yellow-50 transition-all duration-200"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                                  <Icon className="w-5 h-5 text-gray-700" />
+                                </div>
+                                <span className="text-base font-semibold text-gray-900">{child.name}</span>
+                              </div>
+                              {child.subcategories && child.subcategories.length > 0 && (
+                                <ChevronRight className="w-5 h-5 text-gray-400" />
+                              )}
+                            </button>
+                            {child.subcategories && child.subcategories.length > 0 && (
+                              <div className="pl-4 grid grid-cols-2 gap-2">
+                                {child.subcategories.map((subcat) => (
+                                  <button
+                                    key={subcat}
+                                    onClick={() => {
+                                      const params = new URLSearchParams({ subCategory: subcat.toLowerCase() });
+                                      navigate(`${child.link}?${params.toString()}`);
+                                      setCategoriesOpen(false);
+                                      setSelectedCategory(null);
+                                    }}
+                                    className="text-left px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 hover:bg-yellow-50 hover:border-yellow-300 transition-all text-sm"
+                                  >
+                                    {subcat}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
-                  </button>
+                  ) : selectedCategory.subcategories && selectedCategory.subcategories.length > 0 ? (
+                    // Regular category with subcategories
+                    <div>
+                      {/* All Category Option */}
+                      <button
+                        onClick={() => handleAllCategorySelect(selectedCategory)}
+                        className="w-full flex items-center justify-between p-4 mb-3 rounded-xl border-2 border-yellow-400 bg-yellow-50 hover:bg-yellow-100 transition-all duration-200 active:scale-95"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-yellow-400 flex items-center justify-center">
+                            {React.createElement(selectedCategory.icon, { className: "w-5 h-5 text-gray-900" })}
+                          </div>
+                          <span className="text-base font-semibold text-gray-900">All {selectedCategory.name}</span>
+                        </div>
+                      </button>
 
-                  {/* Subcategories Grid */}
-                  <div className="grid grid-cols-2 gap-3">
-                    {selectedCategory.subcategories.map((subcat) => {
-                      const isActive = location.search.includes(`subCategory=${subcat.toLowerCase()}`);
-                      return (
-                        <button
-                          key={subcat}
-                          onClick={() => handleSubcategorySelect(selectedCategory, subcat)}
-                          className={`flex items-center justify-center p-4 rounded-xl border-2 transition-all duration-200 ${
-                            isActive
-                              ? 'border-yellow-400 bg-yellow-50 shadow-md'
-                              : 'border-gray-200 bg-white hover:border-yellow-300 hover:bg-yellow-50 hover:shadow-md active:scale-95'
-                          }`}
-                        >
-                          <span 
-                            className={`text-sm font-medium ${
-                              isActive ? 'text-gray-900 font-semibold' : 'text-gray-700'
-                            }`}
-                          >
-                            {subcat}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                      {/* Subcategories Grid */}
+                      <div className="grid grid-cols-2 gap-3">
+                        {selectedCategory.subcategories.map((subcat) => {
+                          const isActive = location.search.includes(`subCategory=${subcat.toLowerCase()}`);
+                          return (
+                            <button
+                              key={subcat}
+                              onClick={() => handleSubcategorySelect(selectedCategory, subcat)}
+                              className={`flex items-center justify-center p-4 rounded-xl border-2 transition-all duration-200 ${
+                                isActive
+                                  ? 'border-yellow-400 bg-yellow-50 shadow-md'
+                                  : 'border-gray-200 bg-white hover:border-yellow-300 hover:bg-yellow-50 hover:shadow-md active:scale-95'
+                              }`}
+                            >
+                              <span 
+                                className={`text-sm font-medium ${
+                                  isActive ? 'text-gray-900 font-semibold' : 'text-gray-700'
+                                }`}
+                              >
+                                {subcat}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               ) : (
                 // Main Categories Grid

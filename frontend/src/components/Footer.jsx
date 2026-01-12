@@ -44,11 +44,10 @@ const Footer = () => {
               <li><Link to="/category/Sunglasses" className="hover:text-white transition-colors">Sunglasses</Link></li>
               <li><Link to="/category/Computer%20Glasses" className="hover:text-white transition-colors">Computer Glasses</Link></li>
               <li><Link to="/category/Contact%20Lenses" className="hover:text-white transition-colors">Contact Lenses</Link></li>
-              <li><Link to="/category/Accessories" className="hover:text-white transition-colors">Accessories</Link></li>
             </ul>
             <ul className="space-y-2">
+              <li><Link to="/category/Accessories" className="hover:text-white transition-colors">Accessories</Link></li>
               <li><Link to="/category/Bags" className="hover:text-white transition-colors">Bags</Link></li>
-              <li><Link to="/category/Men's%20Shoes" className="hover:text-white transition-colors">Men's Shoes</Link></li>
               <li><Link to="/category/Women's%20Shoes" className="hover:text-white transition-colors">Women's Shoes</Link></li>
             </ul>
           </div>

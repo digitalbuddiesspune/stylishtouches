@@ -6,319 +6,127 @@ import { CartContext } from "../context/CartContext";
 import { Search, X, ChevronDown, ShoppingBag, Menu, Plus } from "lucide-react";
 import { categories } from "../data/categories";
 
-// Accessories Dropdown Component
-const AccessoriesDropdown = () => {
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [isAccessoriesOpen, setIsAccessoriesOpen] = useState(false);
+// Women's Products Dropdown Component
+const WomensProductsDropdown = () => {
+  const [selectedProduct, setSelectedProduct] = useState("");
+  const [isWomensProductsOpen, setIsWomensProductsOpen] = useState(false);
   const navigate = useNavigate();
-  const accessoriesRef = useRef(null);
+  const womensProductsRef = useRef(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (accessoriesRef.current && !accessoriesRef.current.contains(event.target)) {
-        setIsAccessoriesOpen(false);
+      if (womensProductsRef.current && !womensProductsRef.current.contains(event.target)) {
+        setIsWomensProductsOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    setIsAccessoriesOpen(false);
-    if (category === "All") {
-      navigate(`/category/Accessories`);
+  const handleProductSelect = (productType, subcategory = null) => {
+    setSelectedProduct(productType);
+    setIsWomensProductsOpen(false);
+    
+    if (subcategory) {
+      const params = new URLSearchParams({ subCategory: subcategory.toLowerCase() });
+      navigate(`/category/${encodeURIComponent(productType)}?${params.toString()}`);
     } else {
-      // Use subCategory parameter for accessories subcategories
-      const params = new URLSearchParams({ subCategory: category.toLowerCase() });
-      navigate(`/category/Accessories?${params.toString()}`);
+      navigate(`/category/${encodeURIComponent(productType)}`);
     }
   };
 
-  // Handle clicking on the Accessories button itself
-  const handleAccessoriesClick = () => {
-    if (!isAccessoriesOpen) {
-      setIsAccessoriesOpen(true);
+  // Handle clicking on the Women's Products button itself
+  const handleWomensProductsClick = () => {
+    if (!isWomensProductsOpen) {
+      setIsWomensProductsOpen(true);
     } else {
-      // If dropdown is open and user clicks button again, navigate to all accessories
-      navigate(`/category/Accessories`);
-      setIsAccessoriesOpen(false);
+      setIsWomensProductsOpen(false);
     }
   };
 
-  const subcategories = ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs", "Watches"];
+  const accessoriesSubcategories = ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs", "Watches"];
+  const bagsSubcategories = ["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"];
+  const shoesSubcategories = ["Heels", "Flats", "Sneakers", "Boots", "Sandals"];
 
   return (
-    <div className="relative" ref={accessoriesRef}>
+    <div className="relative" ref={womensProductsRef}>
       <button
-        onClick={handleAccessoriesClick}
-        className="group flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg sm:rounded-xl hover:border-sky-400 hover:bg-sky-50 hover:shadow-lg transition-all duration-300 text-xs sm:text-sm font-medium text-gray-700 shadow-sm min-w-[100px] sm:min-w-[140px] justify-between"
+        onClick={handleWomensProductsClick}
+        className="group flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg sm:rounded-xl hover:border-sky-400 hover:bg-sky-50 hover:shadow-lg transition-all duration-300 text-xs sm:text-sm font-medium text-gray-700 shadow-sm min-w-[100px] sm:min-w-[160px] justify-between"
       >
         <span className="group-hover:text-sky-700 transition-colors truncate">
-            <span>Accessories</span>
+          <span>Women's Products</span>
         </span>
-        <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-sky-600 transition-all duration-200 flex-shrink-0 ${isAccessoriesOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-sky-600 transition-all duration-200 flex-shrink-0 ${isWomensProductsOpen ? 'rotate-180' : ''}`} />
       </button>
-      {isAccessoriesOpen && (
-        <div className="absolute top-full left-0 mt-2 w-48 sm:w-52 md:w-56 bg-white/95 backdrop-blur-lg border border-gray-200 rounded-lg sm:rounded-xl shadow-2xl z-[100] max-h-[70vh] sm:max-h-96 overflow-y-auto">
-          <div className="p-1 sm:p-2">
-            <button
-              onClick={() => handleCategorySelect("All")}
-              className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs sm:text-sm font-medium rounded-md sm:rounded-lg group font-semibold"
-            >
-              <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">All Accessories</span>
-            </button>
-            <div className="border-t border-gray-200 my-1"></div>
-            {subcategories.map((category) => (
-              <button
-                key={category}
-                onClick={() => handleCategorySelect(category)}
-                className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs sm:text-sm font-medium rounded-md sm:rounded-lg group"
-              >
-                <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">{category}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Bags Dropdown Component
-const BagsDropdown = () => {
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [isBagsOpen, setIsBagsOpen] = useState(false);
-  const navigate = useNavigate();
-  const bagsRef = useRef(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (bagsRef.current && !bagsRef.current.contains(event.target)) {
-        setIsBagsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    setIsBagsOpen(false);
-    if (category === "All") {
-      navigate(`/category/Bags`);
-    } else {
-      // Use subCategory parameter for bag categories
-      const params = new URLSearchParams({ subCategory: category.toLowerCase() });
-      navigate(`/category/Bags?${params.toString()}`);
-    }
-  };
-
-  // Handle clicking on the Bags button itself
-  const handleBagsClick = () => {
-    if (!isBagsOpen) {
-      setIsBagsOpen(true);
-    } else {
-      // If dropdown is open and user clicks button again, navigate to all bags
-      navigate(`/category/Bags`);
-      setIsBagsOpen(false);
-    }
-  };
-
-  const categories = ["Handbag" , "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"];
-
-  return (
-    <div className="relative" ref={bagsRef}>
-      <button
-        onClick={handleBagsClick}
-        className="group flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg sm:rounded-xl hover:border-sky-400 hover:bg-sky-50 hover:shadow-lg transition-all duration-300 text-xs sm:text-sm font-medium text-gray-700 shadow-sm min-w-[100px] sm:min-w-[140px] justify-between"
-      >
-        <span className="group-hover:text-sky-700 transition-colors truncate">
-            <span>Bags</span>
-        </span>
-        <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-sky-600 transition-all duration-200 flex-shrink-0 ${isBagsOpen ? 'rotate-180' : ''}`} />
-      </button>
-      {isBagsOpen && (
-        <div className="absolute top-full left-0 mt-2 w-48 sm:w-52 md:w-56 bg-white/95 backdrop-blur-lg border border-gray-200 rounded-lg sm:rounded-xl shadow-2xl z-[100] max-h-[70vh] sm:max-h-96 overflow-y-auto">
-          <div className="p-1 sm:p-2">
-            <button
-              onClick={() => handleCategorySelect("All")}
-              className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs sm:text-sm font-medium rounded-md sm:rounded-lg group font-semibold"
-            >
-              <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">All Bags</span>
-            </button>
-            <div className="border-t border-gray-200 my-1"></div>
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => handleCategorySelect(category)}
-                className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs sm:text-sm font-medium rounded-md sm:rounded-lg group"
-              >
-                <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">{category}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Men's Shoes Dropdown Component
-const MensShoesDropdown = () => {
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [isMensShoesOpen, setIsMensShoesOpen] = useState(false);
-  const navigate = useNavigate();
-  const mensShoesRef = useRef(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (mensShoesRef.current && !mensShoesRef.current.contains(event.target)) {
-        setIsMensShoesOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    setIsMensShoesOpen(false);
-    if (category === "All") {
-      navigate(`/category/Men's%20Shoes`);
-    } else {
-      // Use subCategory parameter for men's shoes subcategories
-      const params = new URLSearchParams({ subCategory: category });
-      navigate(`/category/Men's%20Shoes?${params.toString()}`);
-    }
-  };
-
-  // Handle clicking on the Men's Shoes button itself
-  const handleMensShoesClick = () => {
-    if (!isMensShoesOpen) {
-      setIsMensShoesOpen(true);
-    } else {
-      // If dropdown is open and user clicks button again, navigate to all men's shoes
-      navigate(`/category/Men's%20Shoes`);
-      setIsMensShoesOpen(false);
-    }
-  };
-
-  const subcategories = ["Formal", "Sneakers", "Boots"];
-
-  return (
-    <div className="relative" ref={mensShoesRef}>
-      <button
-        onClick={handleMensShoesClick}
-        className="group flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg sm:rounded-xl hover:border-sky-400 hover:bg-sky-50 hover:shadow-lg transition-all duration-300 text-xs sm:text-sm font-medium text-gray-700 shadow-sm min-w-[100px] sm:min-w-[140px] justify-between"
-      >
-        <span className="group-hover:text-sky-700 transition-colors truncate">
-          <span>Men's Shoes</span>
-        </span>
-        <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-sky-600 transition-all duration-200 flex-shrink-0 ${isMensShoesOpen ? 'rotate-180' : ''}`} />
-      </button>
-      {isMensShoesOpen && (
-        <div className="absolute top-full left-0 mt-2 w-48 sm:w-52 md:w-56 bg-white/95 backdrop-blur-lg border border-gray-200 rounded-lg sm:rounded-xl shadow-2xl z-[100] max-h-[70vh] sm:max-h-96 overflow-y-auto">
-          <div className="p-1 sm:p-2">
-            <button
-              onClick={() => handleCategorySelect("All")}
-              className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs sm:text-sm font-medium rounded-md sm:rounded-lg group font-semibold"
-            >
-              <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">All Men's Shoes</span>
-            </button>
-            <div className="border-t border-gray-200 my-1"></div>
-            {subcategories.map((category) => (
-              <button
-                key={category}
-                onClick={() => handleCategorySelect(category)}
-                className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs sm:text-sm font-medium rounded-md sm:rounded-lg group"
-              >
-                <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">{category}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Women's Shoes Dropdown Component
-const WomensShoesDropdown = () => {
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [isWomensShoesOpen, setIsWomensShoesOpen] = useState(false);
-  const navigate = useNavigate();
-  const womensShoesRef = useRef(null);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (womensShoesRef.current && !womensShoesRef.current.contains(event.target)) {
-        setIsWomensShoesOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    setIsWomensShoesOpen(false);
-    if (category === "All") {
-      navigate(`/category/Women's%20Shoes`);
-    } else {
-      // Use subCategory parameter for women's shoes subcategories
-      const params = new URLSearchParams({ subCategory: category });
-      navigate(`/category/Women's%20Shoes?${params.toString()}`);
-    }
-  };
-
-  // Handle clicking on the Women's Shoes button itself
-  const handleWomensShoesClick = () => {
-    if (!isWomensShoesOpen) {
-      setIsWomensShoesOpen(true);
-    } else {
-      // If dropdown is open and user clicks button again, navigate to all women's shoes
-      navigate(`/category/Women's%20Shoes`);
-      setIsWomensShoesOpen(false);
-    }
-  };
-
-  const subcategories = ["Heels", "Flats", "Sneakers", "Boots", "Sandals"];
-
-  return (
-    <div className="relative" ref={womensShoesRef}>
-      <button
-        onClick={handleWomensShoesClick}
-        className="group flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg sm:rounded-xl hover:border-sky-400 hover:bg-sky-50 hover:shadow-lg transition-all duration-300 text-xs sm:text-sm font-medium text-gray-700 shadow-sm min-w-[100px] sm:min-w-[140px] justify-between"
-      >
-        <span className="group-hover:text-sky-700 transition-colors truncate">
-          <span>Women's Shoes</span>
-        </span>
-        <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 text-gray-400 group-hover:text-sky-600 transition-all duration-200 flex-shrink-0 ${isWomensShoesOpen ? 'rotate-180' : ''}`} />
-      </button>
-      {isWomensShoesOpen && (
-        <div className="absolute top-full left-0 mt-2 w-48 sm:w-52 md:w-56 bg-white/95 backdrop-blur-lg border border-gray-200 rounded-lg sm:rounded-xl shadow-2xl z-[100] max-h-[70vh] sm:max-h-96 overflow-y-auto">
-          <div className="p-1 sm:p-2">
-            <button
-              onClick={() => handleCategorySelect("All")}
-              className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs sm:text-sm font-medium rounded-md sm:rounded-lg group font-semibold"
-            >
-              <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">All Women's Shoes</span>
-            </button>
-            <div className="border-t border-gray-200 my-1"></div>
-            {subcategories.map((category) => (
-              <button
-                key={category}
-                onClick={() => handleCategorySelect(category)}
-                className="w-full text-left px-3 sm:px-4 py-2 sm:py-3 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs sm:text-sm font-medium rounded-md sm:rounded-lg group"
-              >
-                <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">{category}</span>
-              </button>
-            ))}
+      {isWomensProductsOpen && (
+        <div className="absolute top-full left-0 mt-2 w-auto min-w-[600px] sm:min-w-[700px] md:min-w-[800px] bg-white/95 backdrop-blur-lg border border-gray-200 rounded-lg sm:rounded-xl shadow-2xl z-[100]">
+          <div className="p-4">
+            <div className="grid grid-cols-3 gap-4">
+              {/* Accessories Section */}
+              <div className="min-w-0">
+                <button
+                  onClick={() => handleProductSelect("Accessories")}
+                  className="w-full text-left px-3 py-2 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-sm font-semibold rounded-md group mb-2"
+                >
+                  <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">All Accessories</span>
+                </button>
+                <div className="space-y-1">
+                  {accessoriesSubcategories.map((subcat) => (
+                    <button
+                      key={subcat}
+                      onClick={() => handleProductSelect("Accessories", subcat)}
+                      className="w-full text-left px-3 py-1.5 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs rounded-md group"
+                    >
+                      <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">{subcat}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Bags Section */}
+              <div className="min-w-0 border-l border-gray-200 pl-4">
+                <button
+                  onClick={() => handleProductSelect("Bags")}
+                  className="w-full text-left px-3 py-2 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-sm font-semibold rounded-md group mb-2"
+                >
+                  <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">All Bags</span>
+                </button>
+                <div className="space-y-1">
+                  {bagsSubcategories.map((subcat) => (
+                    <button
+                      key={subcat}
+                      onClick={() => handleProductSelect("Bags", subcat)}
+                      className="w-full text-left px-3 py-1.5 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs rounded-md group"
+                    >
+                      <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">{subcat}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Women's Shoes Section */}
+              <div className="min-w-0 border-l border-gray-200 pl-4">
+                <button
+                  onClick={() => handleProductSelect("Women's Shoes")}
+                  className="w-full text-left px-3 py-2 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-sm font-semibold rounded-md group mb-2"
+                >
+                  <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">All Women's Shoes</span>
+                </button>
+                <div className="space-y-1">
+                  {shoesSubcategories.map((subcat) => (
+                    <button
+                      key={subcat}
+                      onClick={() => handleProductSelect("Women's Shoes", subcat)}
+                      className="w-full text-left px-3 py-1.5 hover:bg-gradient-to-r hover:from-sky-50 hover:to-indigo-50 hover:text-sky-700 transition-all duration-200 text-xs rounded-md group"
+                    >
+                      <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">{subcat}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -387,7 +195,7 @@ const CategoryDropdowns = () => {
         {isCategoryOpen && (
           <div className="absolute top-full left-0 mt-2 w-52 bg-white/95 backdrop-blur-lg border border-gray-200 rounded-xl shadow-2xl z-[100] max-h-80 overflow-y-auto">
             <div className="p-2">
-              {Object.keys(categories).filter(key => key !== 'accessories').map((key) => (
+              {Object.keys(categories).filter(key => ['eyeglasses', 'sunglasses', 'computerglasses', 'contactlenses'].includes(key)).map((key) => (
                 <button
                   key={key}
                   onClick={() => handleCategorySelect(key)}
@@ -614,11 +422,8 @@ const Header = () => {
       <div className="hidden md:block border-b" style={{ borderColor: 'var(--border-color)' }}>
         <div className="container-optic py-3 sm:py-4">
           <div className="flex justify-center items-center gap-2 md:gap-3 flex-wrap">
+            <WomensProductsDropdown />
             <CategoryDropdowns />
-            <AccessoriesDropdown />
-            <BagsDropdown />
-            <MensShoesDropdown />
-            <WomensShoesDropdown />
           </div>
         </div>
       </div>

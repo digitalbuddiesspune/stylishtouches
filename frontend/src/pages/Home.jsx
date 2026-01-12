@@ -488,10 +488,10 @@ const Home = ({ addToCart, addToWishlist }) => {
                 Footwear Collection
               </div>
               <h2 className="text-optic-heading text-4xl md:text-5xl lg:text-6xl" style={{ color: 'var(--text-primary)' }}>
-                Men's & Women's Shoes
+                Women's Shoes
               </h2>
               <p className="text-optic-body text-lg md:text-xl max-w-lg" style={{ color: 'var(--text-secondary)' }}>
-                Step out in style with our premium collection of footwear. From formal to casual, sneakers to elegant, discover the perfect pair for every occasion.
+                Step out in style with our premium collection of footwear. From heels to flats, sneakers to elegant, discover the perfect pair for every occasion.
               </p>
               
               {/* Features */}
@@ -511,18 +511,14 @@ const Home = ({ addToCart, addToWishlist }) => {
                   </div>
                   <div>
                     <h4 className="text-optic-heading font-semibold" style={{ color: 'var(--text-primary)' }}>Wide variety</h4>
-                    <p className="text-optic-body text-sm" style={{ color: 'var(--text-secondary)' }}>Formal, casual, sneakers & more</p>
+                    <p className="text-optic-body text-sm" style={{ color: 'var(--text-secondary)' }}>Heels, flats, sneakers & more</p>
                   </div>
                 </div>
               </div>
               
-              {/* Two buttons for Men's and Women's */}
+              {/* Button for Women's Shoes */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/category/Men's%20Shoes" className="btn-primary flex-1">
-                  Men's Shoes
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
-                <Link to="/category/Women's%20Shoes" className="btn-secondary flex-1">
+                <Link to="/category/Women's%20Shoes" className="btn-primary flex-1">
                   Women's Shoes
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>

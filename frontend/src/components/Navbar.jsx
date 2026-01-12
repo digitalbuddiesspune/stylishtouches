@@ -12,10 +12,7 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
   const [accountOpen, setAccountOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
-  const [accessoriesOpen, setAccessoriesOpen] = useState(false);
-  const [bagsOpen, setBagsOpen] = useState(false);
-  const [mensShoesOpen, setMensShoesOpen] = useState(false);
-  const [womensShoesOpen, setWomensShoesOpen] = useState(false);
+  const [womensProductsOpen, setWomensProductsOpen] = useState(false);
   const navRef = useRef(null);
   const menuRef = useRef(null);
   const searchInputRef = useRef(null);
@@ -38,9 +35,7 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuOpen(false);
         setCategoriesOpen(false);
-        setAccessoriesOpen(false);
-        setMensShoesOpen(false);
-        setWomensShoesOpen(false);
+        setWomensProductsOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -342,7 +337,7 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                   </button>
                   {categoriesOpen && (
                     <div className="pl-4 mt-2 space-y-1">
-                      {Object.entries(categories).filter(([key]) => key !== 'accessories').map(([key, category]) => (
+                      {Object.entries(categories).filter(([key]) => ['eyeglasses', 'sunglasses', 'computerglasses', 'contactlenses'].includes(key)).map(([key, category]) => (
                         <Link
                           key={key}
                           to={`/category/${encodeURIComponent(category.title)}`}
@@ -360,178 +355,113 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                   )}
                 </div>
 
-                {/* Accessories Section */}
+                {/* Women's Products Section */}
                 <div>
                   <button
                     onClick={() => {
-                      setAccessoriesOpen(!accessoriesOpen);
+                      setWomensProductsOpen(!womensProductsOpen);
                       setCategoriesOpen(false);
-                      setMensShoesOpen(false);
                     }}
                     className="w-full text-left text-optic-body text-sm font-medium uppercase tracking-wider py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-between"
                     style={{ color: 'var(--text-primary)' }}
                   >
-                    <span>ACCESSORIES</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${accessoriesOpen ? 'rotate-180' : ''}`} />
+                    <span>WOMEN'S PRODUCTS</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${womensProductsOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  {accessoriesOpen && (
-                    <div className="pl-4 mt-2 space-y-1">
-                      {["Men", "Women"].map((gender) => (
+                  {womensProductsOpen && (
+                    <div className="pl-4 mt-2 space-y-3">
+                      {/* Accessories */}
+                      <div>
                         <Link
-                          key={gender}
-                          to={`/category/Accessories?gender=${gender}`}
+                          to="/category/Accessories"
                           onClick={() => {
                             setMenuOpen(false);
-                            setAccessoriesOpen(false);
-                            setMensShoesOpen(false);
+                            setWomensProductsOpen(false);
                           }}
-                          className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+                          className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
                           style={{ color: 'var(--text-secondary)' }}
                         >
-                          {gender}
+                          Accessories
                         </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Bags Section */}
-                <div>
-                  <button
-                    onClick={() => {
-                      setBagsOpen(!bagsOpen);
-                      setCategoriesOpen(false);
-                      setAccessoriesOpen(false);
-                      setMensShoesOpen(false);
-                      setWomensShoesOpen(false);
-                    }}
-                    className="w-full text-left text-optic-body text-sm font-medium uppercase tracking-wider py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-between"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    <span>BAGS</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${bagsOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  {bagsOpen && (
-                    <div className="pl-4 mt-2 space-y-1">
-                      <Link
-                        to="/category/Bags"
-                        onClick={() => {
-                          setMenuOpen(false);
-                          setBagsOpen(false);
-                        }}
-                        className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
-                        style={{ color: 'var(--text-secondary)' }}
-                      >
-                        All Bags
-                      </Link>
-                      {["Handbag", "Backpack", "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Crossbody Bag", "Clutch", "Shoulder Bag"].map((category) => (
+                        <div className="pl-4 space-y-1">
+                          {["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs", "Watches"].map((subcat) => (
+                            <Link
+                              key={subcat}
+                              to={`/category/Accessories?subCategory=${subcat.toLowerCase()}`}
+                              onClick={() => {
+                                setMenuOpen(false);
+                                setWomensProductsOpen(false);
+                              }}
+                              className="block text-optic-body text-xs py-1 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+                              style={{ color: 'var(--text-secondary)' }}
+                            >
+                              {subcat}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Bags */}
+                      <div>
                         <Link
-                          key={category}
-                          to={`/category/Bags?subCategory=${category.toLowerCase().replace(/\s+/g, '-')}`}
+                          to="/category/Bags"
                           onClick={() => {
                             setMenuOpen(false);
-                            setBagsOpen(false);
+                            setWomensProductsOpen(false);
                           }}
-                          className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+                          className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
                           style={{ color: 'var(--text-secondary)' }}
                         >
-                          {category}
+                          Bags
                         </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Men's Shoes Section */}
-                <div>
-                  <button
-                    onClick={() => {
-                      setMensShoesOpen(!mensShoesOpen);
-                      setCategoriesOpen(false);
-                      setAccessoriesOpen(false);
-                      setBagsOpen(false);
-                      setWomensShoesOpen(false);
-                    }}
-                    className="w-full text-left text-optic-body text-sm font-medium uppercase tracking-wider py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-between"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    <span>MEN'S SHOES</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${mensShoesOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  {mensShoesOpen && (
-                    <div className="pl-4 mt-2 space-y-1">
-                      <Link
-                        to="/category/Men's%20Shoes"
-                        onClick={() => {
-                          setMenuOpen(false);
-                          setMensShoesOpen(false);
-                        }}
-                        className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
-                        style={{ color: 'var(--text-secondary)' }}
-                      >
-                        All Men's Shoes
-                      </Link>
-                      {["Formal", "Sneakers", "Boots"].map((category) => (
+                        <div className="pl-4 space-y-1">
+                          {["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"].map((subcat) => (
+                            <Link
+                              key={subcat}
+                              to={`/category/Bags?subCategory=${subcat.toLowerCase().replace(/\s+/g, '-')}`}
+                              onClick={() => {
+                                setMenuOpen(false);
+                                setWomensProductsOpen(false);
+                              }}
+                              className="block text-optic-body text-xs py-1 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+                              style={{ color: 'var(--text-secondary)' }}
+                            >
+                              {subcat}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Women's Shoes */}
+                      <div>
                         <Link
-                          key={category}
-                          to={`/category/Men's%20Shoes?subCategory=${category}`}
+                          to="/category/Women's%20Shoes"
                           onClick={() => {
                             setMenuOpen(false);
-                            setMensShoesOpen(false);
+                            setWomensProductsOpen(false);
                           }}
-                          className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+                          className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
                           style={{ color: 'var(--text-secondary)' }}
                         >
-                          {category}
+                          Women's Shoes
                         </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Women's Shoes Section */}
-                <div>
-                  <button
-                    onClick={() => {
-                      setWomensShoesOpen(!womensShoesOpen);
-                      setCategoriesOpen(false);
-                      setAccessoriesOpen(false);
-                      setBagsOpen(false);
-                      setMensShoesOpen(false);
-                    }}
-                    className="w-full text-left text-optic-body text-sm font-medium uppercase tracking-wider py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-between"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    <span>WOMEN'S SHOES</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${womensShoesOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  {womensShoesOpen && (
-                    <div className="pl-4 mt-2 space-y-1">
-                      <Link
-                        to="/category/Women's%20Shoes"
-                        onClick={() => {
-                          setMenuOpen(false);
-                          setWomensShoesOpen(false);
-                        }}
-                        className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
-                        style={{ color: 'var(--text-secondary)' }}
-                      >
-                        All Women's Shoes
-                      </Link>
-                      {["Heels", "Flats", "Sneakers", "Boots", "Sandals"].map((category) => (
-                        <Link
-                          key={category}
-                          to={`/category/Women's%20Shoes?subCategory=${category}`}
-                          onClick={() => {
-                            setMenuOpen(false);
-                            setWomensShoesOpen(false);
-                          }}
-                          className="block text-optic-body text-sm py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
-                          style={{ color: 'var(--text-secondary)' }}
-                        >
-                          {category}
-                        </Link>
-                      ))}
+                        <div className="pl-4 space-y-1">
+                          {["Heels", "Flats", "Sneakers", "Boots", "Sandals"].map((subcat) => (
+                            <Link
+                              key={subcat}
+                              to={`/category/Women's%20Shoes?subCategory=${subcat}`}
+                              onClick={() => {
+                                setMenuOpen(false);
+                                setWomensProductsOpen(false);
+                              }}
+                              className="block text-optic-body text-xs py-1 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+                              style={{ color: 'var(--text-secondary)' }}
+                            >
+                              {subcat}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>

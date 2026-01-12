@@ -116,7 +116,7 @@ const CategoryBar = ({ inline = false }) => {
     return (
       <div className="relative" ref={barRef}>
         <div className="flex items-center gap-2 overflow-x-auto px-2 py-2">
-          {Object.keys(categories).map((key) => (
+          {Object.keys(categories).filter(key => ['eyeglasses', 'sunglasses', 'computerglasses', 'contactlenses'].includes(key)).map((key) => (
             <button
               key={key}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold border transition-all duration-200 whitespace-nowrap ${
@@ -222,7 +222,7 @@ const CategoryBar = ({ inline = false }) => {
   return (
     <div className="w-full bg-gray-100 border-t border-gray-200" ref={barRef}>
       <div className="flex justify-center gap-2 overflow-x-auto px-4 py-4">
-        {Object.keys(categories).map((key) => (
+        {Object.keys(categories).filter(key => ['eyeglasses', 'sunglasses', 'computerglasses', 'contactlenses'].includes(key)).map((key) => (
           <button
             key={key}
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold border transition-all duration-200 min-w-[140px] whitespace-nowrap ${
