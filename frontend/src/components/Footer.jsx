@@ -104,7 +104,7 @@ const Footer = () => {
                 Privacy Policy
               </Link>
               <span className="text-gray-600 hidden sm:inline">•</span>
-              <Link to="/terms-of-service" className="text-gray-500 hover:text-white transition-colors whitespace-nowrap">
+              <Link to="/return-policy" className="text-gray-500 hover:text-white transition-colors whitespace-nowrap">
                 Refund & Cancellation Policy
               </Link>
               <span className="text-gray-600 hidden sm:inline">•</span>
@@ -112,7 +112,7 @@ const Footer = () => {
                 Shipping Policy
               </Link>
               <span className="text-gray-600 hidden sm:inline">•</span>
-              <Link to="/return-policy" className="text-gray-500 hover:text-white transition-colors whitespace-nowrap">
+              <Link to="/terms-of-service" className="text-gray-500 hover:text-white transition-colors whitespace-nowrap">
                 Terms & Conditions
               </Link>
             </div>

@@ -148,6 +148,15 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                       }}
                     />
                     <div className="absolute right-2 flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={onSearchClose}
+                        className="p-1 hover:opacity-70 transition-opacity rounded"
+                        style={{ color: 'var(--text-secondary)' }}
+                        aria-label="Close search"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
                       {searchTerm && (
                         <button
                           type="button"
@@ -161,15 +170,6 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                           <X className="h-4 w-4" />
                         </button>
                       )}
-                      <button
-                        type="button"
-                        onClick={onSearchClose}
-                        className="p-1 hover:opacity-70 transition-opacity rounded"
-                        style={{ color: 'var(--text-secondary)' }}
-                        aria-label="Close search"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
                     </div>
                   </div>
                 </form>

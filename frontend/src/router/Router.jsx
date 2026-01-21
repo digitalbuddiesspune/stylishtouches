@@ -63,9 +63,9 @@ const router = () =>
           <Route path="/product/:id" element={<ProductDetailWithCart />} />
           <Route path="/category/:category" element={<CategoryPageWithCart />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-service" element={<TermsOfService />} />
+          <Route path="/return-policy" element={<TermsOfService />} />
           <Route path="/shipping-policy" element={<ShippingPolicy />} />
-          <Route path="/return-policy" element={<ReturnPolicy />} />
+          <Route path="/terms-of-service" element={<ReturnPolicy />} />
           {/* Payment callback pages (public, no auth required) */}
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-failure" element={<PaymentFailure />} />

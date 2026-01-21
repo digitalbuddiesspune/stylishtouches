@@ -391,6 +391,15 @@ const Header = () => {
                   onChange={handleSearchChange}
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center gap-1 pr-2">
+                  <button
+                    type="button"
+                    onClick={handleSearchClose}
+                    className="p-1.5 hover:opacity-70 transition-opacity rounded-lg hover:bg-gray-100"
+                    style={{ color: 'var(--text-secondary)' }}
+                    aria-label="Close search"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
                   {searchTerm && (
                     <button
                       type="button"
@@ -402,15 +411,6 @@ const Header = () => {
                       <X className="h-4 w-4" />
                     </button>
                   )}
-                  <button
-                    type="button"
-                    onClick={handleSearchClose}
-                    className="p-1.5 hover:opacity-70 transition-opacity rounded-lg hover:bg-gray-100"
-                    style={{ color: 'var(--text-secondary)' }}
-                    aria-label="Close search"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
                 </div>
               </div>
             </form>
