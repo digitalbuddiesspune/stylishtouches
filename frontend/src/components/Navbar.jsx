@@ -446,7 +446,7 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                           Women's Shoes
                         </Link>
                         <div className="pl-4 space-y-1">
-                          {["Heels", "Flats", "Sneakers", "Boots", "Sandals"].map((subcat) => (
+                          {["Heels", "Flats", "Boots", "Sandals"].map((subcat) => (
                             <Link
                               key={subcat}
                               to={`/category/Women's%20Shoes?subCategory=${subcat}`}

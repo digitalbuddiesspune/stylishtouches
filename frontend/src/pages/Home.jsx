@@ -491,7 +491,7 @@ const Home = ({ addToCart, addToWishlist }) => {
                 Women's Shoes
               </h2>
               <p className="text-optic-body text-lg md:text-xl max-w-lg" style={{ color: 'var(--text-secondary)' }}>
-                Step out in style with our premium collection of footwear. From heels to flats, sneakers to elegant, discover the perfect pair for every occasion.
+                Step out in style with our premium collection of footwear. From heels to flats, boots to elegant, discover the perfect pair for every occasion.
               </p>
               
               {/* Features */}
@@ -511,7 +511,7 @@ const Home = ({ addToCart, addToWishlist }) => {
                   </div>
                   <div>
                     <h4 className="text-optic-heading font-semibold" style={{ color: 'var(--text-primary)' }}>Wide variety</h4>
-                    <p className="text-optic-body text-sm" style={{ color: 'var(--text-secondary)' }}>Heels, flats, sneakers & more</p>
+                    <p className="text-optic-body text-sm" style={{ color: 'var(--text-secondary)' }}>Heels, flats, boots & more</p>
                   </div>
                 </div>
               </div>

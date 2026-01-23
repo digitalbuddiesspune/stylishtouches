@@ -47,7 +47,7 @@ const WomensProductsDropdown = () => {
 
   const accessoriesSubcategories = ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs", "Watches"];
   const bagsSubcategories = ["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"];
-  const shoesSubcategories = ["Heels", "Flats", "Sneakers", "Boots", "Sandals"];
+  const shoesSubcategories = ["Heels", "Flats", "Boots", "Sandals"];
 
   return (
     <div className="relative" ref={womensProductsRef}>
