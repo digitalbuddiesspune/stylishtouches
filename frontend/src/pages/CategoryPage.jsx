@@ -224,7 +224,7 @@ export default function CategoryPage({ addToCart, addToWishlist }) {
     
     // Accessories subcategories
     const accessoriesSubcategories = ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs", "Watches"];
-    const bagsSubcategories = ["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"];
+    const bagsSubcategories = ["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag" , "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"];
     const womensShoesSubcategories = ["Heels", "Flats", "Boots", "Sandals"];
     const activeSubCategory = searchParams.get("subCategory") || "";
 

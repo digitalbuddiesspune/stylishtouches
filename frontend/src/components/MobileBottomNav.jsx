@@ -91,7 +91,7 @@ const MobileBottomNav = () => {
     { icon: Phone, name: "Contact Lenses", link: "/category/Contact%20Lenses", subcategories: null },
     { icon: Sparkles, name: "Women's Products", link: "#", subcategories: null, isParent: true, children: [
       { icon: Sparkles, name: "Accessories", link: "/category/Accessories", subcategories: ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs", "Watches"] },
-      { icon: BagIcon, name: "Bags", link: "/category/Bags", subcategories: ["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"] },
+      { icon: BagIcon, name: "Bags", link: "/category/Bags", subcategories: ["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"] },
       { icon: Footprints, name: "Women's Shoes", link: "/category/Women's%20Shoes", subcategories: ["Heels", "Flats", "Boots", "Sandals"] },
     ]},
   ];

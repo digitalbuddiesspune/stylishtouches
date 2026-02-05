@@ -64,10 +64,7 @@ const CategoryBar = ({ inline = false }) => {
         'Round' ] 
     },
     'Contact Lenses': {
-      'Brands': [
-        'Bausch & Lomb',
-        'Acuvue' ,
-        'Alcon'] ,
+      
       'Explore by Disposability': [
         'Daily' ,
         'Monthly' ,
