@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+const API = import.meta.env.VITE_API_BASE_URL;
+
 export default function ProductsCategoryFilter() {
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState("");
@@ -7,7 +9,7 @@ export default function ProductsCategoryFilter() {
   const [subSubCategory, setSubSubCategory] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/products")
+    fetch(`${API}/products`)
       .then((res) => res.json())
       .then((data) => setProducts(data));
   }, []);

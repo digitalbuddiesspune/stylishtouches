@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API = import.meta.env.VITE_API_BASE_URL;
+
 const AdminOrders = () => {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
@@ -16,8 +18,8 @@ const AdminOrders = () => {
     setLoading(true);
     try {
       const url = filterStatus === "all"
-        ? "https://api.stylishtouches.in/api/admin/orders"
-        : `https://api.stylishtouches.in/api/admin/orders?status=${filterStatus}`;
+        ? `${API}/admin/orders`
+        : `${API}/admin/orders?status=${filterStatus}`;
       
       const res = await fetch(url, {
         headers: {
@@ -40,7 +42,7 @@ const AdminOrders = () => {
 
   const handleOrderStatusUpdate = async (orderId, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:4000/api/admin/orders/${orderId}/status`, {
+      const res = await fetch(`${API}/admin/orders/${orderId}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

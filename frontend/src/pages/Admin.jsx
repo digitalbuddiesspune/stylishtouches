@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trash2, Edit, Plus, Package, ShoppingCart } from "lucide-react";
 
+const API = import.meta.env.VITE_API_BASE_URL;
+
 const Admin = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("products");
@@ -77,7 +79,7 @@ const Admin = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4000/api/products");
+      const res = await fetch(`${API}/products`);
       const data = await res.json();
       setProducts(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -90,7 +92,7 @@ const Admin = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4000/api/admin/orders", {
+      const res = await fetch(`${API}/admin/orders`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -132,8 +134,8 @@ const Admin = () => {
 
     try {
       const url = editingProduct
-        ? `http://localhost:4000/api/admin/products/${editingProduct._id}`
-        : "http://localhost:4000/api/admin/products";
+        ? `${API}/admin/products/${editingProduct._id}`
+        : `${API}/admin/products`;
       const method = editingProduct ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -166,7 +168,7 @@ const Admin = () => {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/admin/products/${id}`, {
+      const res = await fetch(`${API}/admin/products/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -232,7 +234,7 @@ const Admin = () => {
 
   const handleOrderStatusUpdate = async (orderId, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:4000/api/admin/orders/${orderId}/status`, {
+      const res = await fetch(`${API}/admin/orders/${orderId}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -356,10 +358,10 @@ const Admin = () => {
                           className="w-full px-3 py-2 border rounded"
                         >
                           <option value="">Select</option>
-                          <option value="Eyeglasses">Eyeglasses</option>
-                          <option value="Sunglasses">Sunglasses</option>
-                          <option value="Computer Glasses">Computer Glasses</option>
-                          <option value="Contact Lenses">Contact Lenses</option>
+                          <option value="eyeglasses">Eyeglasses</option>
+                          <option value="sunglasses">Sunglasses</option>
+                          <option value="computerglasses">Computer Glasses</option>
+                          <option value="contactlenses">Contact Lenses</option>
                         </select>
                       </div>
                       <div>

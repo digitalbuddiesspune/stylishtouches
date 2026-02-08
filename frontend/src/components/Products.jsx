@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard.jsx";
 
 
+const API = import.meta.env.VITE_API_BASE_URL;
+
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,7 +18,7 @@ const Products = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/all-products");
+        const res = await fetch(`${API}/all-products`);
         const data = await res.json();
         // Handle both array and object responses
         setProducts(Array.isArray(data) ? data : data.products || []);

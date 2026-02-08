@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trash2, Edit, Plus, ChevronLeft, ChevronRight, Package, X, Filter, Search } from "lucide-react";
 
+const API = import.meta.env.VITE_API_BASE_URL;
+
 const AdminProducts = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -65,9 +67,11 @@ const AdminProducts = () => {
       });
     }
 
-    // Category filter
+    // Category filter (case-insensitive — DB stores lowercase for eyewear categories)
     if (selectedCategory !== "All") {
-      result = result.filter((p) => p.category === selectedCategory);
+      result = result.filter(
+        (p) => (p.category || "").toLowerCase() === selectedCategory.toLowerCase()
+      );
     }
     // Subcategory filter (case-insensitive — DB stores lowercase for Accessories & Bags)
     if (selectedSubCategory !== "All" && activeSubCategories.length > 0) {
@@ -109,7 +113,7 @@ const AdminProducts = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("https://api.stylishtouches.in/api/admin/products", {
+      const res = await fetch(`${API}/admin/products`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -160,7 +164,7 @@ const AdminProducts = () => {
     if (!confirm("Are you sure you want to delete this product?")) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/admin/products/${id}`, {
+      const res = await fetch(`${API}/admin/products/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -257,8 +261,8 @@ const AdminProducts = () => {
 
     try {
       const url = editingProduct
-        ? `http://localhost:4000/api/admin/products/${editingProduct._id}`
-        : "http://localhost:4000/api/admin/products";
+        ? `${API}/admin/products/${editingProduct._id}`
+        : `${API}/admin/products`;
       const method = editingProduct ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -623,10 +627,10 @@ const AdminProducts = () => {
                     }}
                   >
                     <option value="">Select Category</option>
-                    <option value="Eyeglasses">Eyeglasses</option>
-                    <option value="Sunglasses">Sunglasses</option>
-                    <option value="Computer Glasses">Computer Glasses</option>
-                    <option value="Contact Lenses">Contact Lenses</option>
+                    <option value="eyeglasses">Eyeglasses</option>
+                    <option value="sunglasses">Sunglasses</option>
+                    <option value="computerglasses">Computer Glasses</option>
+                    <option value="contactlenses">Contact Lenses</option>
                     <option value="Accessories">Accessories</option>
                     <option value="Bags">Bags</option>
                     <option value="Women's Shoes">Women's Shoes</option>
