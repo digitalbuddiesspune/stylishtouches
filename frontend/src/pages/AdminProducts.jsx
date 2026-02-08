@@ -213,11 +213,14 @@ const AdminProducts = () => {
         resetForm();
         fetchProducts();
       } else {
-        const error = await res.json();
-        alert(error.message || "Error saving product");
+        const errData = await res.json().catch(() => ({}));
+        const errMsg = errData.error || errData.message || "Error saving product";
+        alert(`Error: ${errMsg}`);
+        console.error("Save product error:", errData);
       }
     } catch (error) {
-      alert("Error saving product");
+      alert("Network error: " + error.message);
+      console.error("Save product network error:", error);
     } finally {
       setLoading(false);
     }

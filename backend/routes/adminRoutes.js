@@ -2,12 +2,12 @@ import express from "express";
 import { adminAuth } from "../middleware/adminMiddleware.js";
 import { 
     listAllProducts, 
+    createProduct,
     updateProduct, 
     deleteProduct, 
     listOrders, 
     updateOrderStatus 
 } from "../controllers/adminController.js";
-import { createProduct } from "../controllers/productController.js";
 
 const router = express.Router();
 

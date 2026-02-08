@@ -198,6 +198,164 @@ function normalizeWomensShoe(shoe) {
   };
 }
 
+// Category display name to Product model enum mapping
+const glassesCategoryMap = {
+  'Eyeglasses': 'eyeglasses',
+  'Sunglasses': 'sunglasses',
+  'Computer Glasses': 'computerglasses',
+  'Contact Lenses': 'contactlenses',
+};
+
+export const createProduct = async (req, res) => {
+  try {
+    const body = { ...req.body };
+
+    // Normalize images
+    let imagesArray = [];
+    if (Array.isArray(body.images)) imagesArray = body.images.filter(Boolean);
+    if (!imagesArray.length && body.Images) {
+      const { image1, image2 } = body.Images || {};
+      imagesArray = [image1, image2].filter(Boolean);
+    }
+    if (!imagesArray.length && body.image1) {
+      imagesArray = [body.image1, body.image2].filter(Boolean);
+    }
+
+    const category = body.category;
+
+    // Route to correct collection based on category
+    if (category === 'Accessories') {
+      const payload = {
+        name: body.title,
+        brand: body.product_info?.brand || 'Unknown',
+        category: 'Accessories',
+        subCategory: body.subCategory ? body.subCategory.toLowerCase() : 'necklace',
+        gender: body.product_info?.gender ? body.product_info.gender.toLowerCase() : 'unisex',
+        price: parseFloat(body.price) || 0,
+        originalPrice: parseFloat(body.price) || 0,
+        finalPrice: parseFloat(body.price) || 0,
+        images: imagesArray,
+        thumbnail: imagesArray[0] || '',
+        description: body.description || '',
+        rating: parseFloat(body.ratings) || 0,
+        discountPercent: parseFloat(body.discount) || 0,
+      };
+      const created = await Accessory.create(payload);
+      return res.status(201).json(normalizeAccessory(created));
+    }
+
+    if (category === 'Bags') {
+      const payload = {
+        name: body.title,
+        brand: body.product_info?.brand || 'Unknown',
+        category: body.subCategory ? body.subCategory.toLowerCase() : 'handbag',
+        gender: body.product_info?.gender ? body.product_info.gender.toLowerCase() : 'unisex',
+        price: parseFloat(body.price) || 0,
+        originalPrice: parseFloat(body.price) || 0,
+        finalPrice: parseFloat(body.price) || 0,
+        images: imagesArray,
+        description: body.description || '',
+        rating: parseFloat(body.ratings) || 0,
+        discountPercent: parseFloat(body.discount) || 0,
+      };
+      const created = await Bag.create(payload);
+      return res.status(201).json(normalizeBag(created));
+    }
+
+    if (category === "Women's Shoes") {
+      const payload = {
+        title: body.title,
+        price: parseFloat(body.price) || 0,
+        originalPrice: parseFloat(body.price) || 0,
+        finalPrice: parseFloat(body.price) || 0,
+        description: body.description || '',
+        category: "Women's Shoes",
+        subCategory: body.subCategory || 'Heels',
+        product_info: {
+          brand: body.product_info?.brand || 'Unknown',
+          gender: 'Women',
+          color: body.product_info?.frameColor || '',
+          outerMaterial: body.product_info?.frameMaterial || '',
+          warranty: body.product_info?.warranty || '',
+        },
+        images: imagesArray,
+        rating: parseFloat(body.ratings) || 0,
+        discountPercent: parseFloat(body.discount) || 0,
+      };
+      const created = await WomensShoe.create(payload);
+      return res.status(201).json(normalizeWomensShoe(created));
+    }
+
+    if (category === "Men's Shoes") {
+      const payload = {
+        title: body.title,
+        price: parseFloat(body.price) || 0,
+        originalPrice: parseFloat(body.price) || 0,
+        finalPrice: parseFloat(body.price) || 0,
+        description: body.description || '',
+        category: "Men's Shoes",
+        subCategory: body.subCategory || 'Formal',
+        product_info: {
+          brand: body.product_info?.brand || 'Unknown',
+          gender: 'Men',
+          color: body.product_info?.frameColor || '',
+          outerMaterial: body.product_info?.frameMaterial || '',
+          warranty: body.product_info?.warranty || '',
+        },
+        images: imagesArray,
+        rating: parseFloat(body.ratings) || 0,
+        discountPercent: parseFloat(body.discount) || 0,
+      };
+      const created = await MensShoe.create(payload);
+      return res.status(201).json(normalizeMensShoe(created));
+    }
+
+    if (category === 'Contact Lenses') {
+      const payload = {
+        title: body.title,
+        price: parseFloat(body.price) || 0,
+        description: body.description || '',
+        category: 'Contact Lenses',
+        subCategory: body.subCategory || '',
+        product_info: {
+          brand: body.product_info?.brand || '',
+          usageDuration: body.product_info?.usageDuration || 'Monthly',
+          material: body.product_info?.frameMaterial || '',
+          warranty: body.product_info?.warranty || '',
+        },
+        images: imagesArray,
+        ratings: parseFloat(body.ratings) || 0,
+        discount: parseFloat(body.discount) || 0,
+      };
+      const created = await ContactLens.create(payload);
+      return res.status(201).json(created);
+    }
+
+    // Default: glasses products (Eyeglasses, Sunglasses, Computer Glasses)
+    const mappedCategory = glassesCategoryMap[category] || category.toLowerCase().replace(/\s+/g, '');
+    const payload = {
+      title: body.title,
+      price: parseFloat(body.price) || 0,
+      description: body.description || '',
+      category: mappedCategory,
+      subCategory: body.subCategory || '',
+      subSubCategory: body.subSubCategory || '',
+      product_info: body.product_info || {},
+      images: imagesArray,
+      ratings: parseFloat(body.ratings) || 0,
+      discount: parseFloat(body.discount) || 0,
+    };
+    const created = await Product.create(payload);
+    return res.status(201).json(created);
+  } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(409).json({ message: "Duplicate key error", error: error?.message });
+    }
+    console.error("Create product error:", error);
+    return res.status(400).json({ message: "Error creating product", error: error.message });
+  }
+};
+
 export const listAllProducts = async (req, res) => {
   try {
     // Get ALL products from all collections for admin dashboard
@@ -261,66 +419,187 @@ export const updateProduct = async (req, res) => {
       imagesArray = [body.image1, body.image2].filter(Boolean);
     }
 
-    const updateData = {
-      title: body.title,
-      price: body.price,
-      description: body.description,
-      category: body.category,
-      subCategory: body.subCategory,
-      subSubCategory: body.subSubCategory,
-      product_info: body.product_info || {},
-      images: imagesArray.length > 0 ? imagesArray : undefined,
-      ratings: body.ratings,
-      discount: body.discount,
+    // Helper to remove undefined fields
+    const clean = (obj) => {
+      const cleaned = { ...obj };
+      Object.keys(cleaned).forEach((key) => cleaned[key] === undefined && delete cleaned[key]);
+      return cleaned;
     };
 
-    // Remove undefined fields
-    Object.keys(updateData).forEach(
-      (key) => updateData[key] === undefined && delete updateData[key]
-    );
-
-    // Try updating in each collection until found
-    let product = await Product.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
-    if (product) return res.json(product);
-
-    // For other collections, map fields appropriately
-    const altUpdateData = {
-      name: body.title,
-      finalPrice: body.price,
-      price: body.price,
-      description: body.description,
-      category: body.category,
-      subCategory: body.subCategory,
-      brand: body.product_info?.brand,
-      gender: body.product_info?.gender,
-      images: imagesArray.length > 0 ? imagesArray : undefined,
-      rating: body.ratings,
-      discountPercent: body.discount,
+    // Helper to safely extract existing product_info as plain object
+    const getExistingProductInfo = (doc) => {
+      if (!doc.product_info) return {};
+      if (typeof doc.product_info.toObject === 'function') return doc.product_info.toObject();
+      return { ...doc.product_info };
     };
-    Object.keys(altUpdateData).forEach(
-      (key) => altUpdateData[key] === undefined && delete altUpdateData[key]
-    );
 
-    product = await ContactLens.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
-    if (product) return res.json(product);
+    // 1) Try Product collection (glasses)
+    let existing = await Product.findById(id);
+    if (existing) {
+      // Map category display name to enum value
+      const mappedCategory = glassesCategoryMap[body.category] || body.category;
+      const updateData = clean({
+        title: body.title,
+        price: parseFloat(body.price) || undefined,
+        description: body.description,
+        category: mappedCategory,
+        subCategory: body.subCategory || undefined,
+        subSubCategory: body.subSubCategory || undefined,
+        product_info: body.product_info || undefined,
+        images: imagesArray.length > 0 ? imagesArray : undefined,
+        ratings: body.ratings != null ? parseFloat(body.ratings) : undefined,
+        discount: body.discount != null ? parseFloat(body.discount) : undefined,
+      });
+      const updated = await Product.findByIdAndUpdate(id, updateData, { new: true });
+      return res.json(updated);
+    }
 
-    product = await Accessory.findByIdAndUpdate(id, altUpdateData, { new: true, runValidators: true });
-    if (product) return res.json(product);
+    // 2) Try ContactLens collection
+    existing = await ContactLens.findById(id);
+    if (existing) {
+      // Merge product_info with existing to preserve fields like usageDuration
+      const existingInfo = getExistingProductInfo(existing);
+      const mergedInfo = { ...existingInfo };
+      if (body.product_info?.brand) mergedInfo.brand = body.product_info.brand;
+      if (body.product_info?.warranty) mergedInfo.warranty = body.product_info.warranty;
 
-    product = await Bag.findByIdAndUpdate(id, altUpdateData, { new: true, runValidators: true });
-    if (product) return res.json(product);
+      const updateData = clean({
+        title: body.title,
+        price: parseFloat(body.price) || undefined,
+        description: body.description,
+        subCategory: body.subCategory || undefined,
+        product_info: mergedInfo,
+        images: imagesArray.length > 0 ? imagesArray : undefined,
+        ratings: body.ratings != null ? parseFloat(body.ratings) : undefined,
+        discount: body.discount != null ? parseFloat(body.discount) : undefined,
+      });
+      // Don't update category (enum restricted to 'Contact Lenses')
+      const updated = await ContactLens.findByIdAndUpdate(id, updateData, { new: true });
+      return res.json(updated);
+    }
 
-    product = await MensShoe.findByIdAndUpdate(id, altUpdateData, { new: true, runValidators: true });
-    if (product) return res.json(product);
+    // 3) Try Accessory collection
+    existing = await Accessory.findById(id);
+    if (existing) {
+      const price = parseFloat(body.price);
+      const discount = parseFloat(body.discount) || 0;
+      const finalPrice = discount > 0 ? price - (price * discount / 100) : price;
 
-    product = await WomensShoe.findByIdAndUpdate(id, altUpdateData, { new: true, runValidators: true });
-    if (product) return res.json(product);
+      const updateData = clean({
+        name: body.title,
+        price: !isNaN(price) ? price : undefined,
+        description: body.description,
+        subCategory: body.subCategory ? body.subCategory.toLowerCase() : undefined,
+        brand: body.product_info?.brand || undefined,
+        gender: body.product_info?.gender ? body.product_info.gender.toLowerCase() : undefined,
+        images: imagesArray.length > 0 ? imagesArray : undefined,
+        thumbnail: imagesArray.length > 0 ? imagesArray[0] : undefined,
+        rating: body.ratings != null ? parseFloat(body.ratings) : undefined,
+        discountPercent: !isNaN(discount) ? discount : undefined,
+        finalPrice: !isNaN(finalPrice) ? finalPrice : undefined,
+      });
+      // Don't update category (it's immutable)
+      const updated = await Accessory.findByIdAndUpdate(id, updateData, { new: true });
+      return res.json(normalizeAccessory(updated));
+    }
+
+    // 4) Try Bag collection
+    existing = await Bag.findById(id);
+    if (existing) {
+      const price = parseFloat(body.price);
+      const discount = parseFloat(body.discount) || 0;
+      const finalPrice = discount > 0 ? price - (price * discount / 100) : price;
+
+      const updateData = clean({
+        name: body.title,
+        price: !isNaN(price) ? price : undefined,
+        description: body.description,
+        // Bag's 'category' field is the bag type (e.g. "handbag"), mapped from subCategory
+        category: body.subCategory ? body.subCategory.toLowerCase() : undefined,
+        brand: body.product_info?.brand || undefined,
+        gender: body.product_info?.gender ? body.product_info.gender.toLowerCase() : undefined,
+        images: imagesArray.length > 0 ? imagesArray : undefined,
+        rating: body.ratings != null ? parseFloat(body.ratings) : undefined,
+        discountPercent: !isNaN(discount) ? discount : undefined,
+        finalPrice: !isNaN(finalPrice) ? finalPrice : undefined,
+        originalPrice: !isNaN(price) ? price : undefined,
+      });
+      const updated = await Bag.findByIdAndUpdate(id, updateData, { new: true });
+      return res.json(normalizeBag(updated));
+    }
+
+    // 5) Try MensShoe collection
+    existing = await MensShoe.findById(id);
+    if (existing) {
+      const price = parseFloat(body.price);
+      const discount = parseFloat(body.discount) || 0;
+      const finalPrice = discount > 0 ? price - (price * discount / 100) : price;
+
+      const existingInfo = getExistingProductInfo(existing);
+      const mergedInfo = {
+        ...existingInfo,
+        brand: body.product_info?.brand || existingInfo.brand,
+        gender: 'Men',
+      };
+      if (body.product_info?.warranty) mergedInfo.warranty = body.product_info.warranty;
+
+      const updateData = clean({
+        title: body.title,
+        price: !isNaN(price) ? price : undefined,
+        description: body.description,
+        subCategory: body.subCategory || undefined,
+        subSubCategory: body.subSubCategory || undefined,
+        product_info: mergedInfo,
+        images: imagesArray.length > 0 ? imagesArray : undefined,
+        rating: body.ratings != null ? parseFloat(body.ratings) : undefined,
+        discountPercent: !isNaN(discount) ? discount : undefined,
+        finalPrice: !isNaN(finalPrice) ? finalPrice : undefined,
+        originalPrice: !isNaN(price) ? price : undefined,
+      });
+      // Don't update category (it's immutable)
+      const updated = await MensShoe.findByIdAndUpdate(id, updateData, { new: true });
+      return res.json(normalizeMensShoe(updated));
+    }
+
+    // 6) Try WomensShoe collection
+    existing = await WomensShoe.findById(id);
+    if (existing) {
+      const price = parseFloat(body.price);
+      const discount = parseFloat(body.discount) || 0;
+      const finalPrice = discount > 0 ? price - (price * discount / 100) : price;
+
+      const existingInfo = getExistingProductInfo(existing);
+      const mergedInfo = {
+        ...existingInfo,
+        brand: body.product_info?.brand || existingInfo.brand,
+        gender: 'Women',
+      };
+      if (body.product_info?.warranty) mergedInfo.warranty = body.product_info.warranty;
+
+      const updateData = clean({
+        title: body.title,
+        price: !isNaN(price) ? price : undefined,
+        description: body.description,
+        subCategory: body.subCategory || undefined,
+        subSubCategory: body.subSubCategory || undefined,
+        product_info: mergedInfo,
+        images: imagesArray.length > 0 ? imagesArray : undefined,
+        rating: body.ratings != null ? parseFloat(body.ratings) : undefined,
+        discountPercent: !isNaN(discount) ? discount : undefined,
+        finalPrice: !isNaN(finalPrice) ? finalPrice : undefined,
+        originalPrice: !isNaN(price) ? price : undefined,
+      });
+      // Don't update category (it's immutable)
+      const updated = await WomensShoe.findByIdAndUpdate(id, updateData, { new: true });
+      return res.json(normalizeWomensShoe(updated));
+    }
 
     return res.status(404).json({ message: "Product not found in any collection" });
   } catch (error) {
     if (error?.code === 11000) {
       return res.status(409).json({ message: "Duplicate key error", error: error?.message });
     }
+    console.error("Update product error:", error);
     res.status(400).json({ message: "Error updating product", error: error.message });
   }
 };
