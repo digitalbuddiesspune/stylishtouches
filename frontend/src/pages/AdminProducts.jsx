@@ -107,10 +107,11 @@ const AdminProducts = () => {
         alert("Product deleted!");
         fetchProducts();
       } else {
-        alert("Error deleting product");
+        const errData = await res.json().catch(() => ({}));
+        alert(errData.message || "Error deleting product");
       }
     } catch (error) {
-      alert("Error deleting product");
+      alert("Error deleting product: " + error.message);
     }
   };
 
@@ -435,6 +436,9 @@ const AdminProducts = () => {
                     <option value="Sunglasses">Sunglasses</option>
                     <option value="Computer Glasses">Computer Glasses</option>
                     <option value="Contact Lenses">Contact Lenses</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Bags">Bags</option>
+                    <option value="Women's Shoes">Women's Shoes</option>
                   </select>
                 </div>
                 <div>

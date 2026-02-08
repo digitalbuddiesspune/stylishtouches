@@ -24,57 +24,8 @@ const CategoryBar = ({ inline = false }) => {
     }
   }, [activeCategory]);
 
-  // Mock sub-subcategories data (you can expand this based on your needs)
-  const subSubCategories = {
-    'Eyeglasses': {
-      'Gender':  
-        ['Unisex' ,
-        'Men',
-        'Women' ,
-        'Kids' ],
-      'Collection': [ 
-        'EyeX' ,
-        'Tees' ,
-        'Signature' ,
-        'Spiderman' ] ,
-      'Shape': [
-        'Rectangle' ,
-        'Round'   ,
-        'Cat Eye' ,
-        'Geometric'  ,
-        'Wayfarer' ] 
-    },
-    'Sunglasses': {
-      'Gender': [
-        'Unisex' ,
-        'Men' ,
-        'Women' ,
-        'Kids' ] ,
-      'Collection': [
-        'Smart Sunglasses' ,
-        'Donald' ,
-        'Glow Up' ,
-        'Whiplash' ,
-        'Vivd Geometry' ] ,
-      'Shape': [
-        'Aviator' ,
-        'Wraparound' ,
-        'Rectangle' ,
-        'Wayfarer'  ,
-        'Round' ] 
-    },
-    'Contact Lenses': {
-      
-      'Explore by Disposability': [
-        'Daily' ,
-        'Monthly' ,
-        'Yearly' ] ,
-      'Explore by Power': [
-        'Spherical' ,
-        'Toric' ,
-        'Multifocal' ] 
-    }
-  };
+  // Sub-subcategories data for glasses categories
+  const subSubCategories = {};
 
   const handleCategorySelect = (cat) => {
     // Navigate to the category page to show ALL products in that category

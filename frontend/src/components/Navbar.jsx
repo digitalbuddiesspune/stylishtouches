@@ -384,7 +384,7 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                           Accessories
                         </Link>
                         <div className="pl-4 space-y-1">
-                          {["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs", "Watches"].map((subcat) => (
+                          {["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs"].map((subcat) => (
                             <Link
                               key={subcat}
                               to={`/category/Accessories?subCategory=${subcat.toLowerCase()}`}
@@ -415,7 +415,7 @@ const Navbar = ({ onSearchClick, isSearchOpen, onSearchClose, searchTerm, onSear
                           Bags
                         </Link>
                         <div className="pl-4 space-y-1">
-                          {["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"].map((subcat) => (
+                          {["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"].map((subcat) => (
                             <Link
                               key={subcat}
                               to={`/category/Bags?subCategory=${subcat.toLowerCase().replace(/\s+/g, '-')}`}

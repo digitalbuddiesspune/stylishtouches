@@ -45,8 +45,8 @@ const WomensProductsDropdown = () => {
     }
   };
 
-  const accessoriesSubcategories = ["Necklace", "Bracelets", "Anklets", "Earings", "Belts", "Scarfs"];
-  const bagsSubcategories = ["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"];
+  const accessoriesSubcategories = ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs"];
+  const bagsSubcategories = ["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"];
   const shoesSubcategories = ["Heels", "Flats", "Boots", "Sandals"];
 
   return (

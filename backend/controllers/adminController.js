@@ -279,16 +279,44 @@ export const updateProduct = async (req, res) => {
       (key) => updateData[key] === undefined && delete updateData[key]
     );
 
-    const product = await Product.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+    // Try updating in each collection until found
+    let product = await Product.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+    if (product) return res.json(product);
 
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
+    // For other collections, map fields appropriately
+    const altUpdateData = {
+      name: body.title,
+      finalPrice: body.price,
+      price: body.price,
+      description: body.description,
+      category: body.category,
+      subCategory: body.subCategory,
+      brand: body.product_info?.brand,
+      gender: body.product_info?.gender,
+      images: imagesArray.length > 0 ? imagesArray : undefined,
+      rating: body.ratings,
+      discountPercent: body.discount,
+    };
+    Object.keys(altUpdateData).forEach(
+      (key) => altUpdateData[key] === undefined && delete altUpdateData[key]
+    );
 
-    res.json(product);
+    product = await ContactLens.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+    if (product) return res.json(product);
+
+    product = await Accessory.findByIdAndUpdate(id, altUpdateData, { new: true, runValidators: true });
+    if (product) return res.json(product);
+
+    product = await Bag.findByIdAndUpdate(id, altUpdateData, { new: true, runValidators: true });
+    if (product) return res.json(product);
+
+    product = await MensShoe.findByIdAndUpdate(id, altUpdateData, { new: true, runValidators: true });
+    if (product) return res.json(product);
+
+    product = await WomensShoe.findByIdAndUpdate(id, altUpdateData, { new: true, runValidators: true });
+    if (product) return res.json(product);
+
+    return res.status(404).json({ message: "Product not found in any collection" });
   } catch (error) {
     if (error?.code === 11000) {
       return res.status(409).json({ message: "Duplicate key error", error: error?.message });
@@ -300,13 +328,27 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await Product.findByIdAndDelete(id);
 
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
+    // Try deleting from each collection until found
+    let deleted = await Product.findByIdAndDelete(id);
+    if (deleted) return res.json({ message: "Product deleted successfully" });
 
-    res.json({ message: "Product deleted successfully" });
+    deleted = await ContactLens.findByIdAndDelete(id);
+    if (deleted) return res.json({ message: "Product deleted successfully" });
+
+    deleted = await Accessory.findByIdAndDelete(id);
+    if (deleted) return res.json({ message: "Product deleted successfully" });
+
+    deleted = await Bag.findByIdAndDelete(id);
+    if (deleted) return res.json({ message: "Product deleted successfully" });
+
+    deleted = await MensShoe.findByIdAndDelete(id);
+    if (deleted) return res.json({ message: "Product deleted successfully" });
+
+    deleted = await WomensShoe.findByIdAndDelete(id);
+    if (deleted) return res.json({ message: "Product deleted successfully" });
+
+    return res.status(404).json({ message: "Product not found in any collection" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting product", error: error.message });
   }
