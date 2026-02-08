@@ -16,8 +16,8 @@ const AdminOrders = () => {
     setLoading(true);
     try {
       const url = filterStatus === "all"
-        ? "http://localhost:4000/api/admin/orders"
-        : `http://localhost:4000/api/admin/orders?status=${filterStatus}`;
+        ? "https://api.stylishtouches.in/api/admin/orders"
+        : `https://api.stylishtouches.in/api/admin/orders?status=${filterStatus}`;
       
       const res = await fetch(url, {
         headers: {

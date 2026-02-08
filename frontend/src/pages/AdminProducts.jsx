@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Trash2, Edit, Plus, ChevronLeft, ChevronRight, Package, X } from "lucide-react";
+import { Trash2, Edit, Plus, ChevronLeft, ChevronRight, Package, X, Filter, Search } from "lucide-react";
 
 const AdminProducts = () => {
   const navigate = useNavigate();
@@ -9,10 +9,74 @@ const AdminProducts = () => {
   const [showProductForm, setShowProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedSubCategory, setSelectedSubCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 9; // change this for more/less per page
+
+  const categories = [
+    "All",
+    "Eyeglasses",
+    "Sunglasses",
+    "Computer Glasses",
+    "Contact Lenses",
+    "Accessories",
+    "Bags",
+    "Women's Shoes",
+  ];
+
+  // Subcategories map for categories that have them
+  const subCategoryMap = {
+    Accessories: ["Necklace", "Bracelets", "Tie", "Anklets", "Earings", "Belts", "Scarfs"],
+    Bags: ["Handbag", "Sling Bag", "Tote Bag", "Duffle Bag", "Wallet", "Laptop Bag", "Travel Bag", "Clutch", "Shoulder Bag"],
+    "Women's Shoes": ["Heels", "Flats", "Boots", "Sandals"],
+  };
+
+  // Check if current category has subcategories
+  const activeSubCategories = subCategoryMap[selectedCategory] || [];
+
+  // Filter products by search + category + subcategory
+  const filteredProducts = useMemo(() => {
+    let result = products;
+
+    // Search filter — matches across multiple fields
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter((p) => {
+        const title = (p.title || "").toLowerCase();
+        const category = (p.category || "").toLowerCase();
+        const subCategory = (p.subCategory || "").toLowerCase();
+        const subSubCategory = (p.subSubCategory || "").toLowerCase();
+        const brand = (p.product_info?.brand || "").toLowerCase();
+        const description = (p.description || "").toLowerCase();
+        const price = String(p.price || "");
+        return (
+          title.includes(q) ||
+          category.includes(q) ||
+          subCategory.includes(q) ||
+          subSubCategory.includes(q) ||
+          brand.includes(q) ||
+          description.includes(q) ||
+          price.includes(q)
+        );
+      });
+    }
+
+    // Category filter
+    if (selectedCategory !== "All") {
+      result = result.filter((p) => p.category === selectedCategory);
+    }
+    // Subcategory filter (case-insensitive — DB stores lowercase for Accessories & Bags)
+    if (selectedSubCategory !== "All" && activeSubCategories.length > 0) {
+      result = result.filter(
+        (p) => (p.subCategory || "").toLowerCase() === selectedSubCategory.toLowerCase()
+      );
+    }
+    return result;
+  }, [products, searchQuery, selectedCategory, selectedSubCategory, activeSubCategories]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -45,7 +109,7 @@ const AdminProducts = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("http://localhost:4000/api/admin/products", {
+      const res = await fetch("https://api.stylishtouches.in/api/admin/products", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -83,10 +147,10 @@ const AdminProducts = () => {
     }
   };
 
-  // ✅ Pagination logic
-  const totalPages = Math.ceil(products.length / productsPerPage);
+  // ✅ Pagination logic (based on filtered products)
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
-  const currentProducts = products.slice(startIndex, startIndex + productsPerPage);
+  const currentProducts = filteredProducts.slice(startIndex, startIndex + productsPerPage);
 
   const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -245,12 +309,115 @@ const AdminProducts = () => {
           </button>
         </div>
 
+        {/* Search Bar */}
+        <div className="relative mb-6">
+          <Search
+            size={20}
+            className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+            style={{ color: 'var(--text-secondary)' }}
+          />
+          <input
+            type="text"
+            placeholder="Search products by name, brand, category, price..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+            className="w-full pl-12 pr-10 py-3 rounded-xl border text-sm transition-all focus:outline-none focus:ring-2"
+            style={{
+              backgroundColor: 'var(--bg-secondary)',
+              borderColor: 'var(--border-color)',
+              color: 'var(--text-primary)',
+              focusRingColor: 'var(--accent-yellow)',
+            }}
+          />
+          {searchQuery && (
+            <button
+              onClick={() => { setSearchQuery(""); setCurrentPage(1); }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-200 transition-colors"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              <X size={16} />
+            </button>
+          )}
+        </div>
+
         {/* Error message */}
         {error && (
           <div className="card-optic p-4 mb-6" style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca' }}>
             <p style={{ color: '#dc2626' }}>{error}</p>
           </div>
         )}
+
+        {/* Category Filter */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Filter size={18} style={{ color: 'var(--text-secondary)' }} />
+            <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Filter by Category</span>
+            {(selectedCategory !== "All" || selectedSubCategory !== "All" || searchQuery.trim()) && (
+              <span
+                className="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full"
+                style={{ backgroundColor: 'var(--accent-yellow)', color: '#1a1a1a' }}
+              >
+                {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => {
+                  setSelectedCategory(cat);
+                  setSelectedSubCategory("All");
+                  setCurrentPage(1);
+                }}
+                className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                style={{
+                  backgroundColor: selectedCategory === cat ? 'var(--accent-yellow)' : 'var(--bg-secondary)',
+                  color: selectedCategory === cat ? '#1a1a1a' : 'var(--text-secondary)',
+                  border: `1px solid ${selectedCategory === cat ? 'var(--accent-yellow)' : 'var(--border-color)'}`,
+                }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Subcategory Filter (shown when category has subcategories) */}
+          {activeSubCategories.length > 0 && (
+            <div className="mt-3 pt-3" style={{ borderTop: '1px solid var(--border-color)' }}>
+              <span className="text-xs font-medium mb-2 block" style={{ color: 'var(--text-secondary)' }}>
+                Subcategory in {selectedCategory}
+              </span>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => { setSelectedSubCategory("All"); setCurrentPage(1); }}
+                  className="px-3 py-1.5 rounded-md text-xs font-medium transition-all"
+                  style={{
+                    backgroundColor: selectedSubCategory === "All" ? 'var(--accent-yellow)' : 'var(--bg-secondary)',
+                    color: selectedSubCategory === "All" ? '#1a1a1a' : 'var(--text-secondary)',
+                    border: `1px solid ${selectedSubCategory === "All" ? 'var(--accent-yellow)' : 'var(--border-color)'}`,
+                  }}
+                >
+                  All {selectedCategory}
+                </button>
+                {activeSubCategories.map((sub) => (
+                  <button
+                    key={sub}
+                    onClick={() => { setSelectedSubCategory(sub); setCurrentPage(1); }}
+                    className="px-3 py-1.5 rounded-md text-xs font-medium transition-all"
+                    style={{
+                      backgroundColor: selectedSubCategory === sub ? 'var(--accent-yellow)' : 'var(--bg-secondary)',
+                      color: selectedSubCategory === sub ? '#1a1a1a' : 'var(--text-secondary)',
+                      border: `1px solid ${selectedSubCategory === sub ? 'var(--accent-yellow)' : 'var(--border-color)'}`,
+                    }}
+                  >
+                    {sub}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Product list */}
         {loading ? (
@@ -260,15 +427,36 @@ const AdminProducts = () => {
               <p className="text-optic-body text-xl" style={{ color: 'var(--text-secondary)' }}>Loading products...</p>
             </div>
           </div>
-        ) : products.length === 0 ? (
+        ) : filteredProducts.length === 0 ? (
           <div className="card-optic p-12 text-center">
             <div className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style={{ backgroundColor: 'var(--bg-secondary)' }}>
               <Package className="w-12 h-12" style={{ color: 'var(--text-secondary)' }} />
             </div>
-            <p className="text-optic-body text-xl mb-4" style={{ color: 'var(--text-secondary)' }}>No products found</p>
-            <p className="text-optic-body text-sm" style={{ color: 'var(--text-secondary)' }}>
-              Click "Add Product" to create your first product.
+            <p className="text-optic-body text-xl mb-4" style={{ color: 'var(--text-secondary)' }}>
+              {searchQuery.trim()
+                ? `No results for "${searchQuery}"`
+                : selectedCategory === "All"
+                  ? "No products found"
+                  : selectedSubCategory !== "All"
+                    ? `No products in "${selectedSubCategory}" under "${selectedCategory}"`
+                    : `No products in "${selectedCategory}"`}
             </p>
+            <p className="text-optic-body text-sm" style={{ color: 'var(--text-secondary)' }}>
+              {searchQuery.trim()
+                ? 'Try a different search term or clear filters.'
+                : selectedCategory === "All"
+                  ? 'Click "Add Product" to create your first product.'
+                  : 'Try selecting a different category or add a product in this category.'}
+            </p>
+            {(selectedCategory !== "All" || selectedSubCategory !== "All" || searchQuery.trim()) && (
+              <button
+                onClick={() => { setSelectedCategory("All"); setSelectedSubCategory("All"); setSearchQuery(""); setCurrentPage(1); }}
+                className="mt-4 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                style={{ backgroundColor: 'var(--accent-yellow)', color: '#1a1a1a' }}
+              >
+                Clear All Filters
+              </button>
+            )}
           </div>
         ) : (
           <>
